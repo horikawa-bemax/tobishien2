@@ -11,16 +11,32 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="bemax.ac.jp.tobishien2.MainActivity">
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/textView" />
+        android:id="@+id/buttonArea">
+
+        <ImageButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:srcCompat="@color/colorAccent"
+            android:id="@+id/imageButton" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="reset button"
+            android:id="@+id/textView"
+            android:gravity="center" />
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView">
+        android:id="@+id/scrollView"
+        android:layout_toRightOf="@id/buttonArea">
 
         <LinearLayout
             android:layout_width="match_parent"
