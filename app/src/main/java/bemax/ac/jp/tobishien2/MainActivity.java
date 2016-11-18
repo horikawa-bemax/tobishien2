@@ -19,22 +19,27 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     ScrollView sv;
     LinearLayout ll;
     ArrayList<ImageView> ivs;
+    Point displaySize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // ディスプレイのサイズを取得
         Display disp = getWindowManager().getDefaultDisplay();
-        Point point = new Point();
-        disp.getSize(point);
+        displaySize = new Point();
+        disp.getSize(displaySize);
 
+        // テキストビュー
         tv = (TextView)findViewById(R.id.textView);
-        tv.setText(""+point.x+"*"+point.y);
+        tv.setText(""+displaySize.x+"*"+displaySize.y);
 
+        // スクロールビュー
         sv = (ScrollView)findViewById(R.id.scrollView);
         ll = (LinearLayout) findViewById(R.id.thisLayout);
 
+        // ImageViewのリスト（後に変更の予定あり）
         ivs = new ArrayList<ImageView>();
         for(int i=0; i<10; i++){
             ImageView view = new ImageView(this);
@@ -45,9 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             ll.addView(view);
             view.setOnTouchListener(this);
         }
-
-        //sv.setVerticalScrollbarPosition(5);
-        //sv.setOnTouchListener(this);
 
     }
 
