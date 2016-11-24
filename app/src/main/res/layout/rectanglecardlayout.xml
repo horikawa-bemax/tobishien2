@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    android:padding="10dp"
+    android:background="@android:color/holo_blue_light"
+    android:id="@+id/cardBase"
+    android:layout_width="400dp"
+    android:layout_height="120dp">
+
+    <ImageView
+        app:srcCompat="@drawable/yatta"
+        android:id="@+id/cardImage"
+        android:layout_width="100dp"
+        android:layout_weight="0.44"
+        android:layout_height="100dp" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="300dp"
+        android:id="@+id/cardText"
+        android:typeface="sans"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_height="100dp" />
+</LinearLayout>

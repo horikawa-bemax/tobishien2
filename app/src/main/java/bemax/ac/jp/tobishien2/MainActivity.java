@@ -5,20 +5,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
-import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
-    TextView tv;
-    ScrollView sv;
-    LinearLayout ll;
-    ArrayList<ImageView> ivs;
+    ScrollView  scrollView;
+    LinearLayout scrollBase;
     Point displaySize;
+
+    Schedule schedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,47 +29,47 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         displaySize = new Point();
         disp.getSize(displaySize);
 
-        // テキストビュー
-        tv = (TextView)findViewById(R.id.textView);
-        tv.setText(""+displaySize.x+"*"+displaySize.y);
+        LayoutInflater inflater = LayoutInflater.from(this);
 
         // スクロールビュー
-        sv = (ScrollView)findViewById(R.id.scrollView);
-        ll = (LinearLayout) findViewById(R.id.thisLayout);
+        scrollView = (ScrollView)findViewById(R.id.scrollView);
+        scrollBase = (LinearLayout) findViewById(R.id.scrollBase);
 
-        // ImageViewのリスト（後に変更の予定あり）
-        ivs = new ArrayList<ImageView>();
-        for(int i=0; i<10; i++){
-            ImageView view = new ImageView(this);
-            view.setImageResource(R.drawable.yatta);
-            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            view.setLayoutParams(layout);
-            ivs.add(view);
-            ll.addView(view);
+        // テスト用コード
+        for(int i=0; i<5; i++) {
+            Card card = new Card("ばんざい", this.getResources(), R.drawable.yatta);
+            View view = card.getCardView(inflater, scrollBase, Card.Type.Square);   // scrollBaseに追加したCardView
             view.setOnTouchListener(this);
+            scrollBase.addView(view);
         }
+
+        // スケジュール読み込み
+
+        // スケジュール表示
 
     }
 
     @Override
+    /**
+     * タッチイベントの処理
+     */
     public boolean onTouch(View view, MotionEvent motionEvent) {
         boolean res = false;
-        if(view instanceof ImageView) {
+        if(view instanceof View) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    sv.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
+                    scrollView.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
                     Log.d("event", "douw");
                     res = true;
                     break;
                 case MotionEvent.ACTION_MOVE:
                     Log.d("event", "move");
                     float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
-                    tv.setText("");
                     view.setX(newX);
                     break;
                 case MotionEvent.ACTION_UP:
                     //view.setX(0);
-                    sv.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
+                    scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
                     Log.d("event", "up");
                     res = false;
                     break;
