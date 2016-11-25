@@ -44,11 +44,10 @@ public class Card {
 
     /**
      * カードの画像をリソースから作成する
-     * @param res   リソース
-     * @param id    リソース番号
+     * @param image   画像
      */
-    public void setImageResource(Resources res, int id) {
-        this.image = BitmapFactory.decodeResource(res, id);
+    public void setImageResource(Bitmap image) {
+        this.image = image;
     }
 
     public void setImageFile(){
@@ -58,43 +57,10 @@ public class Card {
     /**
      * コンストラクタ リソースから
      * @param title
-     * @param res
-     * @param id
+     * @param image
      */
-    public Card(String title, Resources res, int id) {
+    public Card(String title, Bitmap image) {
         setTitle(title);
-        setImageResource(res, id);
+        setImageResource(image);
     }
-
-    /**
-     * インフレーターからViewを作成し、親Viewにセットして返す
-     * @param inflater  インフレーター
-     * @return  カードのView
-     */
-    public View getCardView(LayoutInflater inflater, ViewGroup root, Type type){
-        // カードView作成
-        View cardView;
-        switch(type) {
-            case Square:
-                cardView = inflater.inflate(R.layout.squarecardlayout, root, false);    // falseにしないと、くっつく。（なぜだかは不明）
-                break;
-            case Rectangle:
-                cardView = inflater.inflate(R.layout.rectanglecardlayout, root, false); // ここも
-                break;
-            default:
-                return null;
-        }
-
-        // テキストView初期化
-        TextView tv = (TextView)cardView.findViewById(R.id.cardText);
-        tv.setText(title);
-
-        // イメージView初期化
-        ImageView iv = (ImageView)cardView.findViewById(R.id.cardImage);
-        iv.setImageBitmap(image);
-
-        return cardView;
-    }
-
-
 }

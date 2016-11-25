@@ -30,4 +30,8 @@ public class Schedule {
         this.list = new ArrayList<Card>();
         this.name = name;
     }
+
+    public void addScheduleCard(Card card){
+        list.add(card);
+    };
 }

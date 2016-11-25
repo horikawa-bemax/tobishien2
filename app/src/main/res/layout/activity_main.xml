@@ -13,8 +13,24 @@
 
     <LinearLayout
         android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scheduleLabel">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/scheduleTitle"
+            android:text="scheduleTitle"
+            android:textSize="30dp"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/scheduleLabel"
         android:id="@+id/buttonArea">
 
         <ImageButton
@@ -36,7 +52,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/scrollView"
-        android:layout_toRightOf="@id/buttonArea">
+        android:layout_below="@+id/scheduleLabel"
+        android:layout_toRightOf="@+id/buttonArea">
 
         <LinearLayout
             android:layout_height="wrap_content"
