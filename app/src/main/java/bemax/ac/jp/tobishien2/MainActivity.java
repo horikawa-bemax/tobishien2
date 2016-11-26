@@ -15,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
     ScrollView  scrollView;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         // テスト用サンプル作成
         schedule = new Schedule("初めてのスケジュール");
         for(int i=0; i<8; i++){
-            Card card = new Card("バンザイ"+i, BitmapFactory.decodeResource(getResources(), R.drawable.yatta));
+            Card card = new Card("バンザイ"+i, BitmapFactory.decodeResource(getResources(), R.drawable.kiku));
             schedule.addScheduleCard(card);
         }
 
@@ -57,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         scheduleTitle.setText(schedule.getName());
         for(Card card: schedule.getScheduleList()) {
             View view = getCardView(card, Card.Type.Square, scrollBase);   // scrollBaseに追加したCardView
-            view.setOnTouchListener(this);
             scrollBase.addView(view);
+            view.setOnTouchListener(this);
         }
 
         // スケジュール読み込み
@@ -124,32 +122,36 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
      */
     public boolean onTouch(View view, MotionEvent motionEvent) {
         boolean res = false;
-
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                scrollView.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
-                //Log.d("event", "douw");
-                res = true;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                //Log.d("event", "move");
-                float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
-                view.setX(newX);
-                break;
-            case MotionEvent.ACTION_UP:
-                scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
-                //Log.d("event", "up");
-                if(view.getX() < 400)
-                    view.setX(0);
-                else{
-                   // schedule.removeCard(view.getCard());
-                }
-                res = false;
-                break;
-            default:
-                Log.d("event", "default:" + motionEvent.getAction());
-                res = true;
+        int index = scrollBase.indexOfChild(view);
+        if (view instanceof View) {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    scrollView.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
+                    Log.d("event", "douw" + index);
+                    res = true;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    Log.d("event", "move" + index);
+                    float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
+                    view.setX(newX);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
+                    Log.d("event", "up" + index);
+                    if(view.getX() < 400)
+                        view.setX(0);
+                    else{
+                        //scrollBase.removeView(view);
+                        view.setVisibility(View.GONE);
+                    }
+                    res = false;
+                    break;
+                default:
+                    Log.d("event", "default:" + motionEvent.getAction());
+                    res = true;
+            }
         }
+
         return res;//super.onTouchEvent(motionEvent);
     }
 }
