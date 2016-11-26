@@ -10,15 +10,13 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
     ScrollView  scrollView;
-    LinearLayout scrollBase;
+    ViewGroup scheduleLayout;
     TextView scheduleTitle;
     Point displaySize;
 
@@ -42,22 +40,17 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         // スクロールビュー
         scrollView = (ScrollView)findViewById(R.id.scrollView);     // スクロールView本体
-        scrollBase = (LinearLayout) findViewById(R.id.scrollBase);  // スクロールViewのコンテンツベース
 
-        // テスト用サンプル作成
+        // テスト用のスケジュールサンプル作成
         schedule = new Schedule("初めてのスケジュール");
         for(int i=0; i<8; i++){
-            Card card = new Card("バンザイ"+i, BitmapFactory.decodeResource(getResources(), R.drawable.kiku));
+            Card card = new Card("聞く"+i, BitmapFactory.decodeResource(getResources(), R.drawable.kiku));
             schedule.addScheduleCard(card);
         }
 
-        // スケジュール表示（サンプル）
+        // スケジュール表示
         scheduleTitle.setText(schedule.getName());
-        for(Card card: schedule.getScheduleList()) {
-            View view = getCardView(card, Card.Type.Square, scrollBase);   // scrollBaseに追加したCardView
-            scrollBase.addView(view);
-            view.setOnTouchListener(this);
-        }
+        scheduleLayout = Schedule.createScheduleLayout(scrollView, schedule, Card.Style.Square);
 
         // スケジュール読み込み
 
@@ -81,38 +74,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
      * @return
      */
     public Bitmap loadBitmapFromFile(String filePath){
+
         return null;
-    }
-
-    /**
-     * カードオブジェクトからCardViewを作成する
-     * @param card  カードオブジェクト
-     * @param type  カードタイプ。正方形（square）、長方形（rectangle）
-     * @param root  カード Viewの親View
-     * @return View
-     */
-    public View getCardView(Card card, Card.Type type, ViewGroup root){
-        View view = null;
-        switch(type){
-            case Square:
-                view = getLayoutInflater().inflate(R.layout.squarecardlayout, root, false);
-                break;
-            case Rectangle:
-                view = getLayoutInflater().inflate(R.layout.rectanglecardlayout, root, false);
-                break;
-            default:
-                return null;
-        }
-
-        // テキストを入力
-        TextView tv = (TextView)view.findViewById(R.id.cardText);
-        tv.setText(card.getTitle());
-
-        // 画像を入力
-        ImageView iv = (ImageView)view.findViewById(R.id.cardImage);
-        iv.setImageBitmap(card.getImage());
-
-        return view;
     }
 
     @Override
@@ -122,34 +85,32 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
      */
     public boolean onTouch(View view, MotionEvent motionEvent) {
         boolean res = false;
-        int index = scrollBase.indexOfChild(view);
-        if (view instanceof View) {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    scrollView.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
-                    Log.d("event", "douw" + index);
-                    res = true;
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    Log.d("event", "move" + index);
-                    float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
-                    view.setX(newX);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
-                    Log.d("event", "up" + index);
-                    if(view.getX() < 400)
-                        view.setX(0);
-                    else{
-                        //scrollBase.removeView(view);
-                        view.setVisibility(View.GONE);
-                    }
-                    res = false;
-                    break;
-                default:
-                    Log.d("event", "default:" + motionEvent.getAction());
-                    res = true;
-            }
+        int index = scheduleLayout.indexOfChild(view);
+
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                scrollView.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
+                Log.d("event", "douw" + index);
+                res = true;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.d("event", "move" + index);
+                float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
+                view.setX(newX);
+                break;
+            case MotionEvent.ACTION_UP:
+                scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
+                Log.d("event", "up" + index);
+                if(view.getX() < 400)
+                    view.setX(0);
+                else{
+                    view.setVisibility(View.GONE);  // 間隔を詰めて非表示
+                }
+                res = false;
+                break;
+            default:
+                Log.d("event", "default:" + motionEvent.getAction());
+                res = true;
         }
 
         return res;//super.onTouchEvent(motionEvent);

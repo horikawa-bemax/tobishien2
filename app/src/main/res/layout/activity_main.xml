@@ -55,12 +55,5 @@
         android:layout_below="@+id/scheduleLabel"
         android:layout_toRightOf="@+id/buttonArea">
 
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/scrollBase"
-            android:layout_width="match_parent" >
-        </LinearLayout>
-
     </ScrollView>
 </RelativeLayout>
