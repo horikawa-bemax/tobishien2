@@ -15,12 +15,14 @@ import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
-    ScrollView  scrollView;
-    ViewGroup scheduleLayout;
-    TextView scheduleTitle;
-    Point displaySize;
+    ScrollView  scrollView;     // スクロールView（スクロール関連の操作を行う）
+    ViewGroup scheduleLayout;   // スケジュールを置くViewGroup（カードの配置順を取得できる）
+    TextView scheduleTitle;     // スケジュール名を表示するTextView
+    Point displaySize;          // ディスプレイのサイズ
+    Point contentsSize;         // コンテンツ領域のサイズ
+    Point scrollSize;           // スクロールViewのサイズ
 
-    Schedule schedule;
+    Schedule schedule;          // スケジュールオブジェクト
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         Display disp = getWindowManager().getDefaultDisplay();
         displaySize = new Point();
         disp.getSize(displaySize);
-
-        // コンテンツ領域のサイズを取得
-
+        Log.d("displaySize","w=" + displaySize.x + ",h=" + displaySize.y);
 
         // スケジュールタイトル
         scheduleTitle = (TextView)findViewById(R.id.scheduleTitle);
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             case MotionEvent.ACTION_UP:
                 scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
                 Log.d("event", "up" + index);
-                if(view.getX() < 400)
+                if(view.getX() < scrollSize.x / 2)
                     view.setX(0);
                 else{
                     view.setVisibility(View.GONE);  // 間隔を詰めて非表示
@@ -114,5 +114,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
 
         return res;//super.onTouchEvent(motionEvent);
+    }
+
+    /**
+     * コンテンツ領域の大きさが決まったタイミングで行う処理
+     *
+     * @param hasFocus
+     */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        ViewGroup vg = (ViewGroup)findViewById(R.id.activity_main);
+        contentsSize = new Point(vg.getWidth(), vg.getHeight());
+        Log.d("contentsSize","w=" + vg.getWidth() + ",h=" + vg.getHeight());
+        scrollSize = new Point(scrollView.getWidth(), scrollView.getHeight());
+        Log.d("scrollSize","w=" + scrollSize.x + ",h=" + scrollSize.y);
     }
 }
