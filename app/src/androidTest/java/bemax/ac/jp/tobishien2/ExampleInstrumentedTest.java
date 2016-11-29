@@ -1,6 +1,8 @@
 package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -22,5 +24,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("bemax.ac.jp.tobishien2", appContext.getPackageName());
+
     }
 }
