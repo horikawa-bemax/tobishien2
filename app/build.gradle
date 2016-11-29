@@ -1,14 +1,18 @@
 apply plugin: 'com.android.application'
 
+def VERSION_CODE = 1
+def VERSION_NAME = "1.1.0"
+def PACKAGE_NAME = "bemax.ac.jp.tobishien2"
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
     defaultConfig {
-        applicationId "bemax.ac.jp.tobishien2"
+        applicationId PACKAGE_NAME
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
