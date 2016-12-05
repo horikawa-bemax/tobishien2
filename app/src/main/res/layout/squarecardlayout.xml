@@ -9,7 +9,8 @@
     android:background="@android:color/holo_blue_light"
     android:layout_height="250dp"
     android:id="@+id/cardBase"
-    android:layout_width="250dp">
+    android:layout_width="250dp"
+    android:layout_margin="3dp">
 
     <ImageView
         app:srcCompat="@drawable/yatta"
