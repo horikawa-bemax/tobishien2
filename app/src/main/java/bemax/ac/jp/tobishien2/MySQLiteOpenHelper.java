@@ -2,11 +2,14 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.sql.PreparedStatement;
@@ -16,7 +19,7 @@ import java.sql.PreparedStatement;
  */
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     static final String DB = "tobishien.db";
-    static final int DB_VERSION = 3;
+    static final int DB_VERSION = 5;
 
     static final String CARD_TABLE = "cardTable";
     static final String SCHEDULE_TABLE = "scheduleTable";
@@ -29,7 +32,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private File pictureFolder;
     private AssetManager assetManager;
 
-    enum folder{ASSETS, PICTURE};
+    static public final long ASSETS = 1;
+    static public final long PICTURE = 2;
 
     public MySQLiteOpenHelper(Context context){
         super(context, DB, null, DB_VERSION);
@@ -50,35 +54,6 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_CARD_TABLE);
         sqLiteDatabase.execSQL(CREATE_SCHEDULE_TABLE);
         sqLiteDatabase.execSQL(CREATE_SCHEDULE_INTO_CARD_TABLE);
-
-        SQLiteStatement statement = sqLiteDatabase.compileStatement("insert into cardTable (name, folderType, imageFile) values (?,?,?);");
-        statement.bindString(1, "話す");
-        statement.bindLong(2, folder.ASSETS.ordinal());
-        statement.bindString(3, "hanasu.gif");
-        long card1 = statement.executeInsert();
-
-        //statement = sqLiteDatabase.compileStatement("insert into cardTable values (?,?,?)");
-        statement.bindString(1, "聞く");
-        statement.bindLong(2, folder.ASSETS.ordinal());
-        statement.bindString(3, "kiku.gif");
-        long card2 = statement.executeInsert();
-
-        statement = sqLiteDatabase.compileStatement("insert into scheduleTable (name) values (?);");
-        statement.bindString(1, "初めてのスケジュール");
-        long schedule1 = statement.executeInsert();
-
-        statement = sqLiteDatabase.compileStatement("insert into intoCardTable values (?,?,?);");
-        statement.bindLong(1, schedule1);
-        statement.bindLong(2, card1);
-        statement.bindLong(3, 1);
-        statement.executeInsert();
-
-        statement.bindLong(1, schedule1);
-        statement.bindLong(2, card2);
-        statement.bindLong(3, 2);
-        statement.executeInsert();
-
-
     }
 
     @Override
@@ -87,5 +62,14 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("drop table cardTable;");
         sqLiteDatabase.execSQL("drop table scheduleTable;");
         onCreate(sqLiteDatabase);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase sqLiteDatabase) {
+        super.onOpen(sqLiteDatabase);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from cardTable;", null);
+        while(cursor.moveToNext()){
+            Log.d("cardTable", "" + cursor.getLong(0) + "," + cursor.getString(1) + "," + cursor.getLong(2) + "," + cursor.getString(3));
+        }
     }
 }
