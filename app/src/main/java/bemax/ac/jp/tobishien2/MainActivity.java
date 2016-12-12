@@ -1,8 +1,11 @@
 package bemax.ac.jp.tobishien2;
 
+import android.content.res.AssetManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
@@ -24,6 +29,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     Schedule schedule;          // スケジュールオブジェクト
 
+    private File filesDir;
+    private File externalFilseDir;
+    private File pictureDir;
+    private AssetManager assetManager;
+    private SQLiteDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +45,16 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         displaySize = new Point();
         disp.getSize(displaySize);
         Log.d("displaySize","w=" + displaySize.x + ",h=" + displaySize.y);
+
+        // 画像の保存先パス
+        pictureDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        //Log.d("picturePath",pictureDir.getPath());
+        // アセットマネージャ
+        assetManager = getAssets();
+
+        // データベース
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this);
+        database = helper.getWritableDatabase();
 
         // スケジュールタイトル
         scheduleTitle = (TextView)findViewById(R.id.scheduleTitle);
