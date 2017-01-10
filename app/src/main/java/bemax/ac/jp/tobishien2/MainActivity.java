@@ -1,8 +1,11 @@
 package bemax.ac.jp.tobishien2;
 
+import android.content.res.AssetManager;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,13 +13,16 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
-    ScrollView  scrollView;     // スクロールView（スクロール関連の操作を行う）
+
+public class MainActivity extends AppCompatActivity{
+    ScheduleView scheduleView;     // スクロールView（スクロール関連の操作を行う）
     ViewGroup scheduleLayout;   // スケジュールを置くViewGroup（カードの配置順を取得できる）
+    MenuView menuView;
     TextView scheduleTitle;     // スケジュール名を表示するTextView
     Point displaySize;          // ディスプレイのサイズ
     Point contentsSize;         // コンテンツ領域のサイズ
@@ -24,33 +30,72 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     Schedule schedule;          // スケジュールオブジェクト
 
+    private File filesDir;
+    private File externalFilseDir;
+    private File pictureDir;
+    private AssetManager assetManager;
+    private SQLiteDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         // ディスプレイのサイズを取得
         Display disp = getWindowManager().getDefaultDisplay();
         displaySize = new Point();
         disp.getSize(displaySize);
-        Log.d("displaySize","w=" + displaySize.x + ",h=" + displaySize.y);
+
+        // データベース
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this);
+        database = helper.getWritableDatabase();
+
+        // メインView
+        MainView mainView = new MainView(this);
+        setContentView(mainView);
+        RelativeLayout.LayoutParams params;
+
+        // メニューView
+        menuView = new MenuView(this);
+        menuView.setId(View.generateViewId());
+        params = new RelativeLayout.LayoutParams(displaySize.x / 5, displaySize.y);
+        mainView.addView(menuView, params);
 
         // スケジュールタイトル
-        scheduleTitle = (TextView)findViewById(R.id.scheduleTitle);
+        scheduleTitle = new TextView(this);
+        scheduleTitle.setId(View.generateViewId());
+        params = new RelativeLayout.LayoutParams(displaySize.x * 4 / 5, 100);
+        params.addRule(RelativeLayout.RIGHT_OF, menuView.getId());
+        scheduleTitle.setText("");
+        mainView.addView(scheduleTitle, params);
 
         // スクロールビュー
-        scrollView = (ScrollView)findViewById(R.id.scrollView);     // スクロールView本体
+        scheduleView = new ScheduleView(this);
+        scheduleView.setId(View.generateViewId());
 
         // テスト用のスケジュールサンプル作成
-        schedule = new Schedule("初めてのスケジュール");
-        for(int i=0; i<8; i++){
-            Card card = new Card("聞く"+i, BitmapFactory.decodeResource(getResources(), R.drawable.kiku));
-            schedule.addScheduleCard(card);
+        database.beginTransaction();
+        try {
+            Card c1 = Card.newCard(this, database, "聞く", Card.FolderTypeAsset, "kiku.gif");
+            Card c2 = Card.newCard(this, database, "話す", Card.FolderTypeAsset, "hanasu.gif");
+            Card c3 = Card.newCard(this, database, "電話", Card.FolderTypeStrage, "Camera/IMG_20170107_172518.jpg");
+            Schedule.newSchedule(this, database, "初めてのスケジュール", new Card[]{c1, c2, c3});
+        }catch(SQLiteException e){
+            e.printStackTrace();
+        }finally {
+            database.endTransaction();
         }
+        schedule = Schedule.selectSchedule(this, database, "初めてのスケジュール");
+        scheduleTitle.setText(schedule.getName());
+        scheduleView.setSchedule(schedule);
+
+        params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params.addRule(RelativeLayout.RIGHT_OF, menuView.getId());
+        params.addRule(RelativeLayout.BELOW, scheduleTitle.getId());
+        params.setMargins(10, 10, 10, 10);
+        mainView.addView(scheduleView, params);
 
         // スケジュール表示
-        scheduleTitle.setText(schedule.getName());
-        scheduleLayout = Schedule.createScheduleLayout(scrollView, schedule, Card.Style.Square);
+        //scheduleLayout = Schedule.createScheduleLayout(scrollView, schedule, Card.Style.Square);
 
         // スケジュール読み込み
 
@@ -78,44 +123,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         return null;
     }
 
-    @Override
-    /**
-     * タッチイベントの処理
-     *
-     */
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        boolean res = false;
-        int index = scheduleLayout.indexOfChild(view);
-
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                scrollView.requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
-                Log.d("event", "douw" + index);
-                res = true;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                Log.d("event", "move" + index);
-                float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
-                view.setX(newX);
-                break;
-            case MotionEvent.ACTION_UP:
-                scrollView.requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
-                Log.d("event", "up" + index);
-                if(view.getX() < scrollSize.x / 2)
-                    view.setX(0);
-                else{
-                    view.setVisibility(View.GONE);  // 間隔を詰めて非表示
-                }
-                res = false;
-                break;
-            default:
-                Log.d("event", "default:" + motionEvent.getAction());
-                res = true;
-        }
-
-        return res;//super.onTouchEvent(motionEvent);
-    }
-
     /**
      * コンテンツ領域の大きさが決まったタイミングで行う処理
      *
@@ -125,10 +132,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        ViewGroup vg = (ViewGroup)findViewById(R.id.activity_main);
-        contentsSize = new Point(vg.getWidth(), vg.getHeight());
-        Log.d("contentsSize","w=" + vg.getWidth() + ",h=" + vg.getHeight());
-        scrollSize = new Point(scrollView.getWidth(), scrollView.getHeight());
-        Log.d("scrollSize","w=" + scrollSize.x + ",h=" + scrollSize.y);
+//        ViewGroup vg = (ViewGroup)findViewById(R.id.activity_main);
+//        contentsSize = new Point(vg.getWidth(), vg.getHeight());
+//        Log.d("contentsSize","w=" + vg.getWidth() + ",h=" + vg.getHeight());
+//        scrollSize = new Point(scheduleView.getWidth(), scheduleView.getHeight());
+//        Log.d("scrollSize","w=" + scrollSize.x + ",h=" + scrollSize.y);
     }
 }

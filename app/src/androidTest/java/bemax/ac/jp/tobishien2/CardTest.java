@@ -1,6 +1,7 @@
 package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
@@ -20,54 +21,33 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class CardTest {
     Context appContext;
-    Card card;
+    SQLiteDatabase database;
+    Card card1, card2;
     View view;
 
     @Before
     public void setUp() throws Exception {
         appContext = InstrumentationRegistry.getTargetContext();
-        String title = "hogehoge";
-        Bitmap image = BitmapFactory.decodeResource(appContext.getResources(), R.drawable.yatta);
-        card = new Card(title, image);
-        LinearLayout layout = new LinearLayout(appContext);
-        view = Card.createCardView(layout, card, Card.Style.Square);
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(appContext);
+        database = helper.getWritableDatabase();
+
+        card1 = Card.newCard(appContext, database, "hogehoge", Card.FolderTypeAsset, "kiku.gif");
+
+        card2 = Card.newCard(appContext, database, "電話", Card.FolderTypeStrage, "Camera/IMG_20170107_172518.jpg");
+
     }
 
     @Test
     public void getTitle() throws Exception {
-        assertEquals("hogehoge", card.getTitle());
+        assertEquals("hogehoge", card1.getName());
+        assertEquals("電話", card2.getName());
     }
 
     @Test
     public void getImage() throws Exception {
-        // ビットマップクラスを返す
-        assertSame(Bitmap.class, card.getImage().getClass());
+        assertNotNull(card1.getImage());
+        assertNotNull(card2.getImage());
     }
 
-    @Test
-    public void setTitle() throws Exception {
-        card.setTitle("fugofugo");
-        assertEquals("fugofugo", card.title);
-    }
-
-    @Test
-    public void getView() throws Exception {
-        assertSame(view, card.getView());
-    }
-
-    @Test
-    public void setImageResource() throws Exception {
-
-    }
-
-    @Test
-    public void setImageFile() throws Exception {
-
-    }
-
-    @Test
-    public void createCardView() throws Exception {
-
-    }
 
 }
