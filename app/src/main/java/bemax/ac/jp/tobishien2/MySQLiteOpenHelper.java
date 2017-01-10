@@ -4,30 +4,27 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
-import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.sql.PreparedStatement;
 
 /**
  * Created by bemax_ap01 on 2016/12/12.
  */
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     static final String DB = "tobishien.db";
-    static final int DB_VERSION = 5;
+    static final int DB_VERSION = 6;
 
-    static final String CARD_TABLE = "cardTable";
-    static final String SCHEDULE_TABLE = "scheduleTable";
-    static final String INTO_CARD_TABLE = "intoCardTable";
+    public static final String CARD_TABLE = "cardTable";
+    public static final String SCHEDULE_TABLE = "scheduleTable";
+    public static final String INTO_CARD_TABLE = "intoCardTable";
 
-    static final String CREATE_CARD_TABLE = "create table cardTable( _id integer primary key autoincrement, name string not null, folderType integer not null, imageFile string not null );";
-    static final String CREATE_SCHEDULE_TABLE = "create table scheduleTable( _id integer primary key autoincrement, name string not null);";
-    static final String CREATE_SCHEDULE_INTO_CARD_TABLE = "create table intoCardTable( schedule_id integer, card_id integer, rank integer);";
+    static final String CREATE_CARD_TABLE = "create table cardTable( _id integer primary key autoincrement, name string not null unique, folderType integer not null, imageFile string not null unique);";
+    static final String CREATE_SCHEDULE_TABLE = "create table scheduleTable( _id integer primary key autoincrement, name string not null unique);";
+    static final String CREATE_SCHEDULE_INTO_CARD_TABLE = "create table intoCardTable( schedule_id integer not null, card_id integer not null, rank integer not null);";
 
     private File pictureFolder;
     private AssetManager assetManager;
@@ -37,8 +34,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     public MySQLiteOpenHelper(Context context){
         super(context, DB, null, DB_VERSION);
-        pictureFolder = Environment.getExternalStorageDirectory();
-        assetManager = context.getAssets();
+        //pictureFolder = Environment.getExternalStorageDirectory();
+        //assetManager = context.getAssets();
     }
 
     public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

@@ -25,11 +25,12 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+    Context appContext;
     SQLiteDatabase database;
 
     @Before
     public void databaseInit() throws Exception{
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        appContext = InstrumentationRegistry.getTargetContext();
 
         // データベース
         MySQLiteOpenHelper helper = new MySQLiteOpenHelper(appContext);
@@ -49,22 +50,25 @@ public class ExampleInstrumentedTest {
     @Test
     public void databaseTest() throws  Exception{
         // DB TEST
-        String[] cardName = {"話す","聞く"};
-        long[] cardFolderType = {MySQLiteOpenHelper.ASSETS, MySQLiteOpenHelper.ASSETS};
-        String[] cardFile = {"hanasu.gif","kiku.gif"};
-        long[] card_id = new long[2];
 
-        String[] scheduleName = {"初めてのスケジュール"};
-        long[] schedule_id = new long[1];
+        database.beginTransaction();
+        try {
+            String[] cardName = {"話す", "聞く", "電話"};
+            int[] cardFolderType = {Card.FolderTypeAsset, Card.FolderTypeAsset, Card.FolderTypeStrage};
+            String[] cardFile = {"hanasu.gif", "kiku.gif", "Camera/IMG_20170107_172518.jpg"};
+            Card[] cards = new Card[3];
 
-        SQLiteStatement statement = database.compileStatement("insert into cardTable (name, folderType, imageFile) values (?,?,?);");
-        for(int i=0; i<card_id.length; i++){
-            statement.bindString(1, cardName[i]);
-            statement.bindLong(2, cardFolderType[i]);
-            statement.bindString(3, cardFile[i]);
-            card_id[i] = statement.executeInsert();
+            for (int i = 0; i < 3; i++) {
+                cards[i] = Card.newCard(appContext, database, cardName[i], cardFolderType[i], cardFile[i]);
+            }
+
+            Schedule s = Schedule.newSchedule(appContext, database, "初めてのスケジュール", cards);
+        }finally {
+            database.endTransaction();
         }
 
+
+        /*
         statement = database.compileStatement("insert into scheduleTable (name) values (?);");
         for(int i=0; i<schedule_id.length; i++){
             statement.bindString(1, scheduleName[i]);
@@ -105,6 +109,7 @@ public class ExampleInstrumentedTest {
             assertEquals(cardName[idx], cursor.getString(0));
         }
         cursor.close();
+*/
 
     }
 
@@ -112,7 +117,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
-
         assertEquals("bemax.ac.jp.tobishien2", appContext.getPackageName());
 
     }
