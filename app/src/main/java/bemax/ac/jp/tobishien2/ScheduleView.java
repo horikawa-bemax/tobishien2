@@ -2,9 +2,6 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -80,10 +77,11 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
         // 全ての子Viewを削除
         linearLayout.removeAllViews();
 
-        for(Card card: schedule.getScheduleList()){
+        for(Card card: schedule.getScheduleCardList()){
             CardView cardView = new CardView(getContext(), card);
-            cardView.setBackgroundColor(Color.BLUE);
+            cardView.setBackgroundColor(Color.rgb(128, 128, 255));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(600, 600);
+            params.setMargins(20, 20, 20, 20);
             linearLayout.addView(cardView, params);
             cardView.setOnTouchListener(this);
         }
@@ -91,11 +89,6 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
     public void addCardView(CardView cardView){
 
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
     }
 
     @Override

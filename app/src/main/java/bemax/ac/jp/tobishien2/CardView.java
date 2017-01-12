@@ -2,8 +2,10 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -64,23 +66,29 @@ public class CardView extends RelativeLayout implements GestureDetector.OnGestur
 
             switch(cardStyle){
                 case Square:
-                    params = new LayoutParams(500, 500);
+                    params = new LayoutParams(400, 400);
                     params.setMargins(10,10,10,10);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     imageView.setLayoutParams(params);
 
-                    params = new LayoutParams(500, 50);
-                    params.setMargins(10, 500, 10, 10);
+                    params = new LayoutParams(400, 100);
+                    params.setMargins(10, 450, 10, 10);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     textView.setLayoutParams(params);
+                    textView.setTextSize(40);
 
                     break;
                 case Rectangle:
                     params = new LayoutParams(200, 200);
                     params.setMargins(10, 10, 10, 10);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     imageView.setLayoutParams(params);
 
                     params = new LayoutParams(300, 200);
                     params.setMargins(10, 320, 10, 10);
+                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
                     textView.setLayoutParams(params);
+                    textView.setTextSize(40);
                     break;
             }
         }
