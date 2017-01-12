@@ -18,12 +18,6 @@ public class StyleChangeButton extends ImageView implements View.OnTouchListener
     public StyleChangeButton(Context context) {
         super(context);
 
-        //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(200, 200);
-        //params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        //params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        //params.setMargins(20, 250, 20, 20);
-        //setLayoutParams(params);
-
         setBackgroundColor(Color.GRAY);
 
         Bitmap image = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);

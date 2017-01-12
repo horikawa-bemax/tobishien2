@@ -19,72 +19,49 @@ public class MenuView extends RelativeLayout {
     private ImageView createButton;
     private ImageView readButton;
 
-    public MenuView(Context context) {
+    public MenuView(Context context, int width) {
         super(context);
 
         setBackgroundColor(Color.RED);
 
+        final int W = (int) (width * 0.8F);
+        final int M = (int) (width * 0.1F);
+
+        LayoutParams params;
+
         readButton = new ReadButton(getContext());
         readButton.setId(generateViewId());
-        readButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                return false;
-            }
-        });
-        addView(readButton);
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(CENTER_HORIZONTAL);
+        addView(readButton, params);
 
         createButton = new CreateButton(getContext());
         createButton.setId(generateViewId());
-        createButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                return false;
-            }
-        });
-        addView(createButton);
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(ALIGN_PARENT_BOTTOM);
+        params.addRule(CENTER_HORIZONTAL);
+        addView(createButton, params);
 
         styleChangeButton = new StyleChangeButton(getContext());
         styleChangeButton.setId(generateViewId());
-        styleChangeButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                return false;
-            }
-        });
-        addView(styleChangeButton);
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(BELOW, readButton.getId());
+        params.addRule(CENTER_HORIZONTAL);
+        addView(styleChangeButton, params);
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-        Log.d("MenuView", "" + hasWindowFocus);
+    public ImageView getStyleChangeButton() {
+        return styleChangeButton;
+    }
 
-        int w = (int) (getWidth() * 0.8F);
-        int m = (int) (getWidth() * 0.1F);
+    public ImageView getCreateButton() {
+        return createButton;
+    }
 
-        RelativeLayout.LayoutParams params;
-
-        params = new LayoutParams(w, w);
-        params.addRule(CENTER_HORIZONTAL);
-        params.addRule(ALIGN_PARENT_TOP);
-        params.setMargins(m,m,m,m);
-        readButton.setLayoutParams(params);
-
-        params = new LayoutParams(w , w);
-        params.addRule(CENTER_HORIZONTAL);
-        params.addRule(ALIGN_PARENT_BOTTOM);
-        params.setMargins(m,m,m,m);
-        createButton.setLayoutParams(params);
-
-        params = new LayoutParams(w ,w);
-        params.addRule(CENTER_HORIZONTAL);
-        params.addRule(RelativeLayout.BELOW, readButton.getId());
-        params.setMargins(m,m,m,m);
-        styleChangeButton.setLayoutParams(params);
-
+    public ImageView getReadButton() {
+        return readButton;
     }
 }

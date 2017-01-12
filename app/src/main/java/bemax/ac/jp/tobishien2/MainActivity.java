@@ -4,13 +4,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity{
+
+    private MainView mainView;
 
     Schedule schedule;          // スケジュールオブジェクト
 
@@ -30,7 +38,7 @@ public class MainActivity extends AppCompatActivity{
         SQLiteDatabase database = sqLiteOpenHelper.getWritableDatabase();
 
         // メインView
-        MainView mainView = new MainView(this, metrics);
+        mainView = new MainView(this, metrics);
         setContentView(mainView);
 
         database.beginTransaction();
@@ -54,8 +62,21 @@ public class MainActivity extends AppCompatActivity{
         //
         mainView.setSchedule(schedule);
 
-        dump();
+        //dump();
 
+        ScheduleSelectView ssv = new ScheduleSelectView(this);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        addContentView(ssv, params);
+        ssv.setVisibility(View.INVISIBLE);
+
+        //
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
     }
 
     /**

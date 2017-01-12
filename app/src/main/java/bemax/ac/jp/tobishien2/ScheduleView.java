@@ -2,6 +2,8 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -17,14 +19,23 @@ import android.widget.ScrollView;
 public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
     private Schedule schedule;
+    private int width;
+    private Handler viewModeHandler;
+    private int[] visible;
+
+    enum ViewMode {Square, Rectangle};
+    private ViewMode viewMode;
 
     private LinearLayout linearLayout;
 
     GestureDetector gestureDetector;
     boolean flick;
 
-    public ScheduleView(Context context) {
+    public ScheduleView(Context context, int width) {
         super(context);
+
+        this.width = width;
+        this.viewMode = ViewMode.Rectangle;
 
         linearLayout = new LinearLayout(getContext());
         linearLayout.setId(getResources().getIdentifier("schedule_linearLayout", "id", "bemax.ac.jp.tobishien2"));
@@ -32,6 +43,7 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addView(linearLayout, params);
 
+        final int flicWidth = width / 3;
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent motionEvent) {
@@ -63,7 +75,7 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
                 float v = event2.getX() - event1.getX();
                 Log.d("Gesuture","" + v);
 
-                if(v > 300 && vx > 1000){
+                if(v > flicWidth && vx > flicWidth * 5){
                     flick = true;
                 }
                 return true;
@@ -71,23 +83,56 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
         });
     }
 
-    public void setSchedule(Schedule schedule){
+    public void setSchedule(Schedule schedule, boolean isNew){
         this.schedule = schedule;
 
         // 全ての子Viewを削除
         linearLayout.removeAllViews();
 
-        for(Card card: schedule.getScheduleCardList()){
-            CardView cardView = new CardView(getContext(), card);
-            cardView.setBackgroundColor(Color.rgb(128, 128, 255));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(600, 600);
-            params.setMargins(20, 20, 20, 20);
-            linearLayout.addView(cardView, params);
-            cardView.setOnTouchListener(this);
+        final int W = (int) (width * 0.7F);
+        LinearLayout.LayoutParams params;
+
+        int count = schedule.getScheduleCardList().size();
+
+        if(isNew){
+            visible = new int[count];
+            for(int i=0; i<count; i++){ visible[i] = 1; }
+        }
+
+        for(int i=0; i<count; i++){
+            Card card = schedule.getScheduleCardList().get(i);
+            switch(viewMode) {
+                case Square:
+                    SquareCardView sCardView = new SquareCardView(getContext(), card, W);
+                    sCardView.setBackgroundColor(Color.rgb(128, 128, 255));
+                    params = new LinearLayout.LayoutParams(W, W);
+                    params.setMargins(20, 20, 20, 20);
+                    linearLayout.addView(sCardView, params);
+                    sCardView.setOnTouchListener(this);
+                    if(visible[i] == 1){
+                        sCardView.setVisibility(VISIBLE);
+                    }else{
+                        sCardView.setVisibility(GONE);
+                    }
+                    break;
+                case Rectangle:
+                    RectangleCardView rCardView = new RectangleCardView(getContext(), card, W);
+                    rCardView.setBackgroundColor(Color.rgb(128, 128, 255));
+                    params = new LinearLayout.LayoutParams(W, (int) (W * 0.2F));
+                    params.setMargins(20, 20, 20, 20);
+                    linearLayout.addView(rCardView, params);
+                    rCardView.setOnTouchListener(this);
+                    if(visible[i] == 1){
+                        rCardView.setVisibility(VISIBLE);
+                    }else{
+                        rCardView.setVisibility(GONE);
+                    }
+                    break;
+            }
         }
     }
 
-    public void addCardView(CardView cardView){
+    public void addCardView(SquareCardView cardView){
 
     }
 
@@ -101,6 +146,7 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
         if(flick){
             view.setVisibility(View.GONE);
+            visible[index] = 0;
             flick = false;
         }
 
@@ -117,37 +163,18 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
         }
 
         return res;
+    }
 
+    public void setViewMode(ViewMode mode){
+        this.viewMode = mode;
+        setSchedule(this.schedule, false);
+    }
 
-        /*
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                requestDisallowInterceptTouchEvent(true); // scrollViewのスクロールを無効化
-                Log.d("event", "douw" + index);
-                res = true;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                Log.d("event", "move" + index);
-                float newX = view.getX() + motionEvent.getX() - view.getWidth() / 2;
-                view.setX(newX);
-                break;
-            case MotionEvent.ACTION_UP:
-                requestDisallowInterceptTouchEvent(false); // scrollViewのスクロールを有効化
-                Log.d("event", "up" + index);
-                if(view.getX() < getWidth() / 2)
-                    view.setX(0);
-                else{
-                    view.setVisibility(View.GONE);  // 間隔を詰めて非表示
-                }
-                res = false;
-                break;
-            default:
-                Log.d("event", "default:" + motionEvent.getAction());
-                res = true;
-        }
+    public Handler getViewModeHandler(){
+        return viewModeHandler;
+    }
 
-        return res;//super.onTouchEvent(motionEvent);
-        */
-
+    public ViewMode getViewMode(){
+        return viewMode;
     }
 }

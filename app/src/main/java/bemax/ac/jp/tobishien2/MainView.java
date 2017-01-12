@@ -6,6 +6,8 @@ import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,6 +18,9 @@ import android.widget.TextView;
 
 public class MainView extends RelativeLayout {
     private MenuView menuView;
+    private ReadButton readButton;
+    private StyleChangeButton styleChangeButton;
+    private CreateButton createButton;
     private TextView scheduleTitle;
     private ScheduleView scheduleView;
 
@@ -23,53 +28,56 @@ public class MainView extends RelativeLayout {
 
     public MainView(Context context, DisplayMetrics metrics) {
         super(context);
+
         this.metrics = metrics;
+        final int MW = (int) (metrics.widthPixels * 0.2F);
+        final int SW = (int) (metrics.widthPixels * 0.8F);
+        final int STH = (int) (SW * 0.1F);
 
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         setLayoutParams(params);
 
-        menuView = new MenuView(getContext());
+        menuView = new MenuView(getContext(), MW);
         menuView.setId(generateViewId());
-        addView(menuView);
+        params = new LayoutParams(MW, ViewGroup.LayoutParams.MATCH_PARENT);
+        addView(menuView, params);
 
         scheduleTitle = new TextView(getContext());
         scheduleTitle.setId(generateViewId());
-        addView(scheduleTitle);
+        params = new LayoutParams(SW, STH);
+        params.addRule(RIGHT_OF, menuView.getId());
+        scheduleTitle.setTextSize(SW * 0.08F);
+        addView(scheduleTitle, params);
 
-        scheduleView = new ScheduleView(getContext());
+        scheduleView = new ScheduleView(getContext(), SW);
         scheduleView.setId(generateViewId());
-        addView(scheduleView);
+        params = new LayoutParams(SW, ViewGroup.LayoutParams.MATCH_PARENT);
+        params.addRule(RIGHT_OF, menuView.getId());
+        params.addRule(BELOW, scheduleTitle.getId());
+        addView(scheduleView, params);
 
-    }
+        menuView.getStyleChangeButton().setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                ScheduleView.ViewMode mode = scheduleView.getViewMode();
 
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
+                switch (mode){
+                    case Square:
+                        scheduleView.setViewMode(ScheduleView.ViewMode.Rectangle);
+                        break;
+                    case Rectangle:
+                        scheduleView.setViewMode(ScheduleView.ViewMode.Square);
+                        break;
+                }
 
-        if(!hasWindowFocus) return;
+                return false;
+            }
+        });
 
-        int mw = (int) (getWidth() * 0.2F);
-        int sw = (int) (getWidth() * 0.8F);
-        int sth = (int) (sw * 0.1F);
-
-        LayoutParams params;
-
-        params = new LayoutParams(mw, ViewGroup.LayoutParams.MATCH_PARENT);
-        params.setMargins(0,0,0,0);
-        menuView.setLayoutParams(params);
-
-        params = new LayoutParams(sw, sth);
-        params.setMargins(mw, 0, 0, 0);
-        scheduleTitle.setLayoutParams(params);
-        scheduleTitle.setTextSize((int)(sth * 0.9F / metrics.density));
-
-        params = new LayoutParams(sw, ViewGroup.LayoutParams.MATCH_PARENT);
-        params.setMargins(mw, sth + 10, 0, 0);
-        scheduleView.setLayoutParams(params);
     }
 
     public void setSchedule(Schedule schedule){
-        scheduleView.setSchedule(schedule);
+        scheduleView.setSchedule(schedule, true);
         scheduleTitle.setText(schedule.getName());
     }
 }

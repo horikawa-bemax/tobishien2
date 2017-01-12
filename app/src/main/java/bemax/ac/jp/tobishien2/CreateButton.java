@@ -21,20 +21,14 @@ public class CreateButton extends ImageView implements View.OnTouchListener{
     public CreateButton(Context context) {
         super(context);
 
-        //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(200, 200);
-        //params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        //params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        //params.setMargins(20, 20, 20, 20);
-        //setLayoutParams(params);
-
         setBackgroundColor(Color.YELLOW);
 
-        Bitmap image = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+        Bitmap image = Bitmap.createBitmap(160, 160, Bitmap.Config.ARGB_8888);
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setTextSize(100);
         Canvas canvas = new Canvas(image);
-        canvas.drawText("新", 50, 150, paint);
+        canvas.drawText("新", 30, 130, paint);
         setImageBitmap(image);
 
         setOnTouchListener(this);

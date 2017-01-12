@@ -2,13 +2,9 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import org.junit.Before;
 import org.junit.Test;

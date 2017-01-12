@@ -1,11 +1,12 @@
 package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
-import android.database.DataSetObserver;
-import android.view.View;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import android.graphics.Color;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -16,15 +17,20 @@ import java.util.List;
  */
 
 public class ScheduleSelectView extends RelativeLayout {
-    private ListView listView;
+    private ScheduleListView listView;
 
     public ScheduleSelectView(Context context) {
         super(context);
 
-        listView = new ListView(getContext());
-        addView(listView);
+        SQLiteOpenHelper helper = new MySQLiteOpenHelper(getContext());
+        SQLiteDatabase db = helper.getReadableDatabase();
 
-        ListAdapter adapter;
+        setBackgroundColor(Color.WHITE);
+
+        listView = new ScheduleListView(getContext());
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        listView.setScheduleAdapter(db);
+        addView(listView, params);
     }
 
     private List<String> getScheduleTitles(){
