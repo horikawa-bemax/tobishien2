@@ -12,19 +12,10 @@ import android.widget.TextView;
  * Created by bemax_ap01 on 2017/01/10.
  */
 
-public class RectangleCardView extends RelativeLayout implements GestureDetector.OnGestureListener{
-
-    private Card card;
-
-    private ImageView imageView;
-    private TextView textView;
-
-    GestureDetector gestureDetector;
+public class RectangleCardView extends AbstractCardView{
 
     public RectangleCardView(Context context, Card card, int width){
-        super(context);
-
-        this.card = card;
+        super(context, card);
 
         final int IW = (int) (width * 0.1F);
         final int TW = (int) (width * 0.8F);
@@ -32,68 +23,17 @@ public class RectangleCardView extends RelativeLayout implements GestureDetector
 
         LayoutParams params;
 
-        imageView = new ImageView(getContext());
-        imageView.setId(generateViewId());
-        imageView.setImageBitmap(card.getImage());
+        super.getImageView().setImageBitmap(card.getImage());
         params = new LayoutParams(IW, IW);
         params.setMargins(M, M, M, M);
-        addView(imageView, params);
+        addView(getImageView(), params);
 
-        textView = new TextView(getContext());
-        textView.setId(generateViewId());
-        textView.setTextSize(TW * 0.1F);
-        textView.setText(card.getName());
+        super.getTextView().setTextSize(TW * 0.1F);
+        super.getTextView().setText(card.getName());
         params = new LayoutParams(TW, width);
         params.setMargins(M, M, M, M);
-        params.addRule(RIGHT_OF, imageView.getId());
-        addView(textView, params);
+        params.addRule(RIGHT_OF, super.getImageView().getId());
+        addView(super.getTextView(), params);
 
-        gestureDetector = new GestureDetector(getContext(), this);
-
-    }
-
-    public void setTitle(String title){
-        textView.setText(title);
-    }
-
-    public void setImage(Bitmap image){
-        imageView.setImageBitmap(image);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-
-        return super.onInterceptTouchEvent(event);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent motionEvent) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent motionEvent) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent event1, MotionEvent event2, float v, float v1) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent event) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2, float vx, float vy) {
-
-        return false;
     }
 }

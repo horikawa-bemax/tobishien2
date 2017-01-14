@@ -3,7 +3,6 @@ package bemax.ac.jp.tobishien2;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,7 +19,6 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
     private Schedule schedule;
     private int width;
-    private Handler viewModeHandler;
     private int[] visible;
 
     enum ViewMode {Square, Rectangle};
@@ -168,10 +166,6 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
     public void setViewMode(ViewMode mode){
         this.viewMode = mode;
         setSchedule(this.schedule, false);
-    }
-
-    public Handler getViewModeHandler(){
-        return viewModeHandler;
     }
 
     public ViewMode getViewMode(){
