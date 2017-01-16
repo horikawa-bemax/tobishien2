@@ -72,23 +72,12 @@ public class MainActivity extends AppCompatActivity{
         //
         mainView.setSchedule(schedule);
 
-        //dump();
-
         ScheduleSelectView ssv = new ScheduleSelectView(this);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addContentView(ssv, params);
         ssv.setVisibility(View.INVISIBLE);
 
-        //
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-
-        createCardView = new CreateCardView(this, metrics);
+        createCardView = new CreateCardView(this, sqLiteOpenHelper, metrics);
         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addContentView(createCardView, params1);
 
@@ -107,7 +96,14 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        //startActivityForResult(intent, GALARY_CODE);
+        mainView.setOnCreateButtonTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                createCardView.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
+
 
     }
 
@@ -146,6 +142,8 @@ public class MainActivity extends AppCompatActivity{
                     Uri uri = data.getData();
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        String imagePath = uri.getPath();
+                        Log.d("ImagePath", imagePath);
                         createCardView.postImageView(bitmap);
                     }catch(IOException e){}
                 }

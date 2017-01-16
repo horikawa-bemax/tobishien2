@@ -18,8 +18,6 @@ public class SquareCardView extends AbstractCardView{
 
     private Card card;
 
-    GestureDetector gestureDetector;
-
     public SquareCardView(Context context, Card card, int width){
         super(context, card);
 

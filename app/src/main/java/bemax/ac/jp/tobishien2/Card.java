@@ -4,16 +4,12 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +68,7 @@ public class Card {
                     image = BitmapFactory.decodeStream(is);
                     break;
                 case FolderTypeStrage:
-                    File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                    File dir = context.getExternalFilesDir(null);
                     File file = new File(dir, this.imageFile);
                     Log.d("FilePath", file.getPath());
                     image = BitmapFactory.decodeFile(file.getPath());
@@ -101,39 +97,6 @@ public class Card {
         this.id = -1;
     }
 
-    /**
-     * カードを生成する
-     * @param root      親となるViewGroup
-     * @param card      カード
-     * @param style      カードのスタイル
-     * @return          カードView
-     */
-    public static View createCardView(ViewGroup root, Card card, Card.Style style) throws IOException {
-        View view = null;
-        LayoutInflater inflater = LayoutInflater.from(root.getContext());
-        switch(style){
-            case Square:
-                view = inflater.inflate(R.layout.squarecardlayout, root, false);
-                break;
-            case Rectangle:
-                view = inflater.inflate(R.layout.rectanglecardlayout, root, false);
-                break;
-            default:
-                return null;
-        }
-
-        // テキストを入力
-        TextView tv = (TextView)view.findViewById(R.id.cardText);
-        tv.setText(card.getName());
-
-        // 画像を入力
-        ImageView iv = (ImageView)view.findViewById(R.id.cardImage);
-        iv.setImageBitmap(card.getImage());
-
-        card.view = view;
-        return view;
-    }
-
     public static Card newCard(Context context, SQLiteDatabase db, String name, int folderType, String imageFile){
         long cid;
 
@@ -143,6 +106,8 @@ public class Card {
         statement.bindString(3, imageFile);
         cid = statement.executeInsert();
         statement.close();
+
+        Log.d("Card.newCard","now stored '"+name+"'");
 
         return Card.selectCard(context, db, cid);
     }

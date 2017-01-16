@@ -1,9 +1,6 @@
 package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -73,11 +70,14 @@ public class MainView extends RelativeLayout {
                 return false;
             }
         });
-
     }
 
     public void setSchedule(Schedule schedule){
         scheduleView.setSchedule(schedule, true);
         scheduleTitle.setText(schedule.getName());
+    }
+
+    public void setOnCreateButtonTouchListener(OnTouchListener l){
+        menuView.getCreateButton().setOnTouchListener(l);
     }
 }
