@@ -3,6 +3,7 @@ package bemax.ac.jp.tobishien2;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -16,6 +17,7 @@ import android.widget.ScrollView;
  */
 
 public class ScheduleView extends ScrollView implements View.OnTouchListener{
+    private DisplayMetrics metrics;
 
     private Schedule schedule;
     private int width;
@@ -29,10 +31,11 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
     GestureDetector gestureDetector;
     boolean flick;
 
-    public ScheduleView(Context context, int width) {
+    public ScheduleView(Context context, DisplayMetrics metrics) {
         super(context);
 
-        this.width = width;
+        this.metrics = metrics;
+        this.width = (int)(metrics.widthPixels * 0.8F);
         this.viewMode = ViewMode.Rectangle;
 
         linearLayout = new LinearLayout(getContext());

@@ -2,6 +2,7 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -11,7 +12,6 @@ import android.widget.TextView;
  */
 
 public abstract class AbstractCardView extends RelativeLayout {
-
     private Card card;
     private ImageView imageView;
     private TextView textView;

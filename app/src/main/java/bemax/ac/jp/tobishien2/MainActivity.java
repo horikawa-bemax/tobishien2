@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,6 +42,8 @@ public class MainActivity extends AppCompatActivity{
         DisplayMetrics metrics = new DisplayMetrics();
         disp.getMetrics(metrics);
 
+        Log.d("metorics","" + metrics.scaledDensity);
+
         // データベース
         sqLiteOpenHelper = new MySQLiteOpenHelper(this);
         SQLiteDatabase database = sqLiteOpenHelper.getWritableDatabase();
@@ -72,14 +73,26 @@ public class MainActivity extends AppCompatActivity{
         //
         mainView.setSchedule(schedule);
 
+        // スケジュールセレクト
         ScheduleSelectView ssv = new ScheduleSelectView(this);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addContentView(ssv, params);
         ssv.setVisibility(View.INVISIBLE);
 
+        // カード新規作成
         createCardView = new CreateCardView(this, sqLiteOpenHelper, metrics);
         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addContentView(createCardView, params1);
+
+        // スケジュール新規作成
+        CreateScheduleView createScheduleView = new CreateScheduleView(this, sqLiteOpenHelper);
+        LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        addContentView(createScheduleView, params2);
+
+
+
+
+
 
         final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);

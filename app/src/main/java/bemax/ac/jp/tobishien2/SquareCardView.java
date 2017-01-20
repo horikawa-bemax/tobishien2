@@ -2,6 +2,8 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -32,10 +34,10 @@ public class SquareCardView extends AbstractCardView{
         params.setMargins(M, M, M, 0);
         addView(super.getImageView(), params);
 
-        super.getTextView().setTextSize(TH * 0.4F);
+        super.getTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX, TH * 0.7F);
         super.getTextView().setText(card.getName());
         params = new LayoutParams(width, TH);
-        params.setMargins(M, 0, M, M);
+        params.setMargins(0, 0, 0, 0);
         params.addRule(BELOW, super.getImageView().getId());
         addView(super.getTextView(), params);
 

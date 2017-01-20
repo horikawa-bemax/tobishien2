@@ -126,4 +126,20 @@ public class Card {
 
         return card;
     }
+
+    public static Card[] selectAllCards(Context context, SQLiteDatabase db){
+        Card[] cards = null;
+
+        Cursor cursor = db.query("cardTable", null, null, null, null, null, null);
+        if(cursor.getCount()>0){
+            cards = new Card[cursor.getCount()];
+            int i = 0;
+            while (cursor.moveToNext()){
+                long id = cursor.getLong(cursor.getColumnIndex("_id"));
+                cards[i] = Card.selectCard(context, db, id);
+                i++;
+            }
+        }
+        return cards;
+    }
 }

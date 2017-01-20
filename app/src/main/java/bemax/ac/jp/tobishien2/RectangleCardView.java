@@ -2,6 +2,8 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -28,7 +30,7 @@ public class RectangleCardView extends AbstractCardView{
         params.setMargins(M, M, M, M);
         addView(getImageView(), params);
 
-        super.getTextView().setTextSize(TW * 0.1F);
+        super.getTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX, TW * 0.7F);
         super.getTextView().setText(card.getName());
         params = new LayoutParams(TW, width);
         params.setMargins(M, M, M, M);

@@ -3,6 +3,7 @@ package bemax.ac.jp.tobishien2;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,10 @@ public class MainView extends RelativeLayout {
         scheduleTitle.setId(generateViewId());
         params = new LayoutParams(SW, STH);
         params.addRule(RIGHT_OF, menuView.getId());
-        scheduleTitle.setTextSize(SW * 0.08F);
+        scheduleTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, SW * 0.8F);
         addView(scheduleTitle, params);
 
-        scheduleView = new ScheduleView(getContext(), SW);
+        scheduleView = new ScheduleView(getContext(), metrics);
         scheduleView.setId(generateViewId());
         params = new LayoutParams(SW, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(RIGHT_OF, menuView.getId());
