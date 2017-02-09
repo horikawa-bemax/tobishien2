@@ -6,7 +6,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import android.graphics.Color;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.List;
 
 public class ScheduleSelectView extends RelativeLayout {
     private ScheduleListView listView;
+    private ImageButton returnButton;
 
     public ScheduleSelectView(Context context) {
         super(context);
@@ -25,17 +29,38 @@ public class ScheduleSelectView extends RelativeLayout {
         SQLiteOpenHelper helper = new MySQLiteOpenHelper(getContext());
         SQLiteDatabase db = helper.getReadableDatabase();
 
-        setBackgroundColor(Color.WHITE);
+        setBackgroundColor(Color.argb(200,100,100,100));
+
+        returnButton = new ImageButton(context);
+        returnButton.setId(generateViewId());
+        returnButton.setBackgroundColor(Color.BLUE);
+        returnButton.setImageResource(R.drawable.ic_clear);
+        LayoutParams params = new LayoutParams(100,100);
+        params.setMargins(100,0,0,100);
+        params.addRule(ALIGN_PARENT_BOTTOM);
+        addView(returnButton,params);
 
         listView = new ScheduleListView(getContext());
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        listView.setBackgroundColor(Color.WHITE);
+        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params.setMargins(100,100,100,0);
+        params.addRule(ABOVE, returnButton.getId());
         listView.setScheduleAdapter(db);
         addView(listView, params);
+
     }
 
     private List<String> getScheduleTitles(){
         ArrayList<String> list = new ArrayList<String>();
 
         return list;
+    }
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener l){
+        listView.setOnItemClickListener(l);
+    }
+
+    public ScheduleListView getListView(){
+        return listView;
     }
 }

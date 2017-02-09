@@ -34,6 +34,10 @@ public class CreateCardView extends RelativeLayout {
 
     private SQLiteOpenHelper helper;
 
+    private ImageButton newButton;
+    private ImageButton updateButton;
+    private ImageButton deleteButton;
+
     private FloatingActionButton addImageButton;
     private ImageView imageView;
     private EditText editText;
@@ -43,6 +47,7 @@ public class CreateCardView extends RelativeLayout {
     public CreateCardView(Context context, SQLiteOpenHelper helper, DisplayMetrics metrics) {
         super(context);
         this.helper = helper;
+
         // 画像表示View
         imageView = new ImageView(context);
         imageView.setId(generateViewId());
@@ -170,7 +175,9 @@ public class CreateCardView extends RelativeLayout {
         int width = (int)(right - left);
         int height = (int)(buttom - top);
         // 表示用画像を作成
-        addedCardImage = Bitmap.createBitmap(image, x, y, width, height);
+        Bitmap temp = Bitmap.createBitmap(image, x, y, width, height);
+        addedCardImage = Bitmap.createScaledBitmap(temp, 300, 300, true);
+
         // 表示用画像をViewにセットする
         imageView.setImageBitmap(addedCardImage);
     }

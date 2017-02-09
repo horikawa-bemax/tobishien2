@@ -16,9 +16,9 @@ import android.widget.Toast;
  * Created by bemax_ap01 on 2017/01/11.
  */
 
-public class CreateButton extends ImageView implements View.OnTouchListener{
+public class CreateCardButton extends ImageView implements View.OnTouchListener{
 
-    public CreateButton(Context context) {
+    public CreateCardButton(Context context) {
         super(context);
 
         setBackgroundColor(Color.YELLOW);
@@ -28,7 +28,7 @@ public class CreateButton extends ImageView implements View.OnTouchListener{
         paint.setColor(Color.BLACK);
         paint.setTextSize(100);
         Canvas canvas = new Canvas(image);
-        canvas.drawText("新", 30, 130, paint);
+        canvas.drawText("C", 30, 130, paint);
         setImageBitmap(image);
 
         setOnTouchListener(this);

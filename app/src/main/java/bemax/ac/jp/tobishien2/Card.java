@@ -127,6 +127,20 @@ public class Card {
         return card;
     }
 
+    public static Card selectCardByName(Context context, SQLiteDatabase db, String name){
+        Card card = null;
+        Cursor cc = db.query("cardTable", null, "name=?", new String[]{name}, null, null, null, null);
+        if(cc.moveToNext()){
+            card = new Card(context);
+            card.id = cc.getLong(cc.getColumnIndex("_id"));
+            card.name = cc.getString(cc.getColumnIndex("name"));
+            card.folderType = cc.getInt(cc.getColumnIndex("folderType"));
+            card.imageFile = cc.getString(cc.getColumnIndex("imageFile"));
+        }
+
+        return card;
+    }
+
     public static Card[] selectAllCards(Context context, SQLiteDatabase db){
         Card[] cards = null;
 

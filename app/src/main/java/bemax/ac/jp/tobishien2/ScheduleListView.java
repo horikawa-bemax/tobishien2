@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 public class ScheduleListView extends ListView {
-    private ListAdapter scheduleAdapter;
+    private ArrayAdapter<String> scheduleAdapter;
 
     public ScheduleListView(Context context) {
         super(context);
@@ -32,13 +32,16 @@ public class ScheduleListView extends ListView {
 
     public void setScheduleAdapter(SQLiteDatabase db){
         final String[] scheduleTitles = Schedule.getScheduleTitles(getContext(), db);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
+        scheduleAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
 
         for(String title: scheduleTitles){
-            adapter.add(title);
+            scheduleAdapter.add(title);
         }
 
-        setAdapter(adapter);
+        setAdapter(scheduleAdapter);
+    }
+
+    public ArrayAdapter<String> getAdapter(){
+        return scheduleAdapter;
     }
 }

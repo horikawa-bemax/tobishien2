@@ -30,7 +30,7 @@ public class RectangleCardView extends AbstractCardView{
         params.setMargins(M, M, M, M);
         addView(getImageView(), params);
 
-        super.getTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX, TW * 0.7F);
+        super.getTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX, IW * 0.5F);
         super.getTextView().setText(card.getName());
         params = new LayoutParams(TW, width);
         params.setMargins(M, M, M, M);

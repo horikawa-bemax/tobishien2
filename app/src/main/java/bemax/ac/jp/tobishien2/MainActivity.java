@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -17,15 +17,20 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     private MainView mainView;
     private CreateCardView createCardView;
+    private ScheduleSelectView scheduleSelectView;
+    private CreateScheduleView createScheduleView;
 
     Schedule schedule;          // スケジュールオブジェクト
 
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity{
         DisplayMetrics metrics = new DisplayMetrics();
         disp.getMetrics(metrics);
 
-        Log.d("metorics","" + metrics.scaledDensity);
+//        Log.d("metorics","" + metrics.scaledDensity);
 
         // データベース
         sqLiteOpenHelper = new MySQLiteOpenHelper(this);
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity{
         mainView = new MainView(this, metrics);
         setContentView(mainView);
 
-        database.beginTransaction();
+ /*       database.beginTransaction();
         try {
             Card c1 = Card.newCard(this, database, "聞く", Card.FolderTypeAsset, "kiku.gif");
             Card c2 = Card.newCard(this, database, "話す", Card.FolderTypeAsset, "hanasu.gif");
@@ -72,26 +77,32 @@ public class MainActivity extends AppCompatActivity{
 
         //
         mainView.setSchedule(schedule);
-
+*/
         // スケジュールセレクト
-        ScheduleSelectView ssv = new ScheduleSelectView(this);
+        scheduleSelectView = new ScheduleSelectView(this);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        addContentView(ssv, params);
-        ssv.setVisibility(View.INVISIBLE);
+        addContentView(scheduleSelectView, params);
+        scheduleSelectView.setVisibility(View.INVISIBLE);
+        scheduleSelectView.setOnItemClickListener(this);
 
         // カード新規作成
         createCardView = new CreateCardView(this, sqLiteOpenHelper, metrics);
         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params1.setMargins(100,100,100,100);
         addContentView(createCardView, params1);
+        createCardView.setVisibility(View.INVISIBLE);
 
-        // スケジュール新規作成
-        CreateScheduleView createScheduleView = new CreateScheduleView(this, sqLiteOpenHelper);
+        // スケジュール作成画面
+        // スケジュール選択画面のアダプターを取得
+        ArrayAdapter<String> adapter = scheduleSelectView.getListView().getAdapter();
+        // スケジュール作成画面をインスタンス化
+        createScheduleView = new CreateScheduleView(this, sqLiteOpenHelper, adapter);
+        // レイアウト
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params2.setMargins(100,100,100,100);
+        // コンテンツに追加
         addContentView(createScheduleView, params2);
-
-
-
-
+        createScheduleView.setVisibility(View.INVISIBLE);
 
 
         final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -109,10 +120,26 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        mainView.setOnCreateButtonTouchListener(new View.OnTouchListener() {
+        mainView.setOnCreateCardButtonTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 createCardView.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
+
+        mainView.setOnCreateScheduleButtonTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                createScheduleView.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
+
+        mainView.setOnReadButtonTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                scheduleSelectView.setVisibility(View.VISIBLE);
                 return false;
             }
         });
@@ -154,13 +181,39 @@ public class MainActivity extends AppCompatActivity{
                 if (resultCode == RESULT_OK){
                     Uri uri = data.getData();
                     try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        Bitmap bitmap = null;
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        InputStream is = getContentResolver().openInputStream(uri);
+                        BitmapFactory.decodeStream(is, null, options);
+                        is.close();
+                        int scaleX = options.outWidth / 300;
+                        int scaleY = options.outHeight / 300;
+                        options = new BitmapFactory.Options();
+
+                        int scale = scaleX < scaleY ? scaleX : scaleY;
+                        if(scaleX > 2 && scaleY > 2){
+                            for(int i=2; i<scale; i*=2) options.inSampleSize = i;
+                            is = getContentResolver().openInputStream(uri);
+                            bitmap = BitmapFactory.decodeStream(is, null, options);
+                        }else {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        }
                         String imagePath = uri.getPath();
-                        Log.d("ImagePath", imagePath);
                         createCardView.postImageView(bitmap);
                     }catch(IOException e){}
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        scheduleSelectView.setVisibility(View.INVISIBLE);
+        SQLiteDatabase db = sqLiteOpenHelper.getReadableDatabase();
+        String s = (String)adapterView.getItemAtPosition(i);
+        schedule = Schedule.selectSchedule(this, db, s);
+        mainView.setSchedule(schedule);
+        db.close();
     }
 }

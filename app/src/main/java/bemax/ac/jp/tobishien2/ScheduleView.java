@@ -2,7 +2,6 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -29,7 +28,7 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
     private LinearLayout linearLayout;
 
     GestureDetector gestureDetector;
-    boolean flick;
+    boolean longTap;
 
     public ScheduleView(Context context, DisplayMetrics metrics) {
         super(context);
@@ -68,18 +67,12 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
             @Override
             public void onLongPress(MotionEvent motionEvent) {
-
+                longTap = true;
             }
 
             @Override
             public boolean onFling(MotionEvent event1, MotionEvent event2, float vx, float vy) {
-                float v = event2.getX() - event1.getX();
-                Log.d("Gesuture","" + v);
-
-                if(v > flicWidth && vx > flicWidth * 5){
-                    flick = true;
-                }
-                return true;
+                return false;
             }
         });
     }
@@ -111,9 +104,9 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
                     linearLayout.addView(sCardView, params);
                     sCardView.setOnTouchListener(this);
                     if(visible[i] == 1){
-                        sCardView.setVisibility(VISIBLE);
+                        sCardView.getHandler().sendEmptyMessage(0);
                     }else{
-                        sCardView.setVisibility(GONE);
+                        sCardView.getHandler().sendEmptyMessage(100);
                     }
                     break;
                 case Rectangle:
@@ -124,9 +117,9 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
                     linearLayout.addView(rCardView, params);
                     rCardView.setOnTouchListener(this);
                     if(visible[i] == 1){
-                        rCardView.setVisibility(VISIBLE);
+                        rCardView.getHandler().sendEmptyMessage(0);
                     }else{
-                        rCardView.setVisibility(GONE);
+                        rCardView.getHandler().sendEmptyMessage(100);
                     }
                     break;
             }
@@ -145,24 +138,23 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
         gestureDetector.onTouchEvent(motionEvent);
 
-        if(flick){
-            view.setVisibility(View.GONE);
-            visible[index] = 0;
-            flick = false;
+        switch(motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                requestDisallowInterceptTouchEvent(true);
+                res = true;
+                break;
+            case MotionEvent.ACTION_UP:
+                requestDisallowInterceptTouchEvent(false);
+                if (longTap) {
+                    visible[index] = 1;
+                    ((AbstractCardView) view).getHandler().sendEmptyMessage(0);
+                    longTap = false;
+                } else {
+                    visible[index] = 0;
+                    ((AbstractCardView) view).getHandler().sendEmptyMessage(100);
+                }
+                res = false;
         }
-
-        if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-            requestDisallowInterceptTouchEvent(true);
-            Log.d("touch", "down");
-            res = true;
-        }
-
-        if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-            requestDisallowInterceptTouchEvent(false);
-            Log.d("touch", "up");
-            res = false;
-        }
-
         return res;
     }
 
@@ -173,5 +165,9 @@ public class ScheduleView extends ScrollView implements View.OnTouchListener{
 
     public ViewMode getViewMode(){
         return viewMode;
+    }
+
+    public Schedule getSchedule(){
+        return this.schedule;
     }
 }

@@ -2,10 +2,6 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -16,7 +12,8 @@ import android.widget.RelativeLayout;
 public class MenuView extends RelativeLayout {
 
     private ImageView styleChangeButton;
-    private ImageView createButton;
+    private ImageView createCardButton;
+    private ImageView createScheduleButton;
     private ImageView readButton;
 
     public MenuView(Context context, int width) {
@@ -36,13 +33,21 @@ public class MenuView extends RelativeLayout {
         params.addRule(CENTER_HORIZONTAL);
         addView(readButton, params);
 
-        createButton = new CreateButton(getContext());
-        createButton.setId(generateViewId());
+        createCardButton = new CreateCardButton(getContext());
+        createCardButton.setId(generateViewId());
         params = new LayoutParams(W, W);
         params.setMargins(M, M, M, M);
         params.addRule(ALIGN_PARENT_BOTTOM);
         params.addRule(CENTER_HORIZONTAL);
-        addView(createButton, params);
+        addView(createCardButton, params);
+
+        createScheduleButton = new CreateScheduleButton(getContext());
+        createScheduleButton.setId(generateViewId());
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(ABOVE, createCardButton.getId());
+        params.addRule(CENTER_HORIZONTAL);
+        addView(createScheduleButton, params);
 
         styleChangeButton = new StyleChangeButton(getContext());
         styleChangeButton.setId(generateViewId());
@@ -57,9 +62,11 @@ public class MenuView extends RelativeLayout {
         return styleChangeButton;
     }
 
-    public ImageView getCreateButton() {
-        return createButton;
+    public ImageView getCreateCardButton() {
+        return createCardButton;
     }
+
+    public ImageView getCreateScheduleButton(){ return createScheduleButton; }
 
     public ImageView getReadButton() {
         return readButton;

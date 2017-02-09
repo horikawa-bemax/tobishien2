@@ -2,7 +2,6 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,9 +15,9 @@ import android.widget.TextView;
 
 public class MainView extends RelativeLayout {
     private MenuView menuView;
-    private ReadButton readButton;
-    private StyleChangeButton styleChangeButton;
-    private CreateButton createButton;
+//    private ReadButton readButton;
+//    private StyleChangeButton styleChangeButton;
+//    private CreateCardButton createCardButton;
     private TextView scheduleTitle;
     private ScheduleView scheduleView;
 
@@ -44,11 +43,12 @@ public class MainView extends RelativeLayout {
         scheduleTitle.setId(generateViewId());
         params = new LayoutParams(SW, STH);
         params.addRule(RIGHT_OF, menuView.getId());
-        scheduleTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, SW * 0.8F);
+        scheduleTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, STH * 0.8F);
         addView(scheduleTitle, params);
 
         scheduleView = new ScheduleView(getContext(), metrics);
         scheduleView.setId(generateViewId());
+        scheduleView.setVerticalScrollBarEnabled(true);
         params = new LayoutParams(SW, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(RIGHT_OF, menuView.getId());
         params.addRule(BELOW, scheduleTitle.getId());
@@ -59,13 +59,15 @@ public class MainView extends RelativeLayout {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 ScheduleView.ViewMode mode = scheduleView.getViewMode();
 
-                switch (mode){
-                    case Square:
-                        scheduleView.setViewMode(ScheduleView.ViewMode.Rectangle);
-                        break;
-                    case Rectangle:
-                        scheduleView.setViewMode(ScheduleView.ViewMode.Square);
-                        break;
+                if(scheduleView.getSchedule() != null) {
+                    switch (mode) {
+                        case Square:
+                            scheduleView.setViewMode(ScheduleView.ViewMode.Rectangle);
+                            break;
+                        case Rectangle:
+                            scheduleView.setViewMode(ScheduleView.ViewMode.Square);
+                            break;
+                    }
                 }
 
                 return false;
@@ -78,7 +80,15 @@ public class MainView extends RelativeLayout {
         scheduleTitle.setText(schedule.getName());
     }
 
-    public void setOnCreateButtonTouchListener(OnTouchListener l){
-        menuView.getCreateButton().setOnTouchListener(l);
+    public void setOnCreateCardButtonTouchListener(OnTouchListener l){
+        menuView.getCreateCardButton().setOnTouchListener(l);
+    }
+
+    public void setOnCreateScheduleButtonTouchListener(OnTouchListener l){
+        menuView.getCreateScheduleButton().setOnTouchListener(l);
+    }
+
+    public void setOnReadButtonTouchListener(OnTouchListener l){
+        menuView.getReadButton().setOnTouchListener(l);
     }
 }
