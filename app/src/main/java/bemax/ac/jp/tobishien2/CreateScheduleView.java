@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by bemax_ap01 on 2017/01/20.
+ * スケジュール新規作成ビュー
  */
 
 public class CreateScheduleView extends RelativeLayout implements View.OnTouchListener{
@@ -44,6 +44,7 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
         this.helper = helper;
         this.listAdapter = adapter;
 
+        // 選択用カードリスト作成
         SQLiteDatabase db = helper.getReadableDatabase();
         ArrayAdapter<String> selectCardViewAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
         Card[] cards = Card.selectAllCards(context, db);
@@ -55,8 +56,8 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
         selectionCardList.setId(generateViewId());
         selectionCardList.setAdapter(selectCardViewAdapter);
 
-        List<String> list = new ArrayList<String>();
-        scheduleCardAdapter = new ScheduleCardAdapter(context, list);
+        // スケジュール用アダプタ
+        scheduleCardAdapter = getNewScheduleCardAdapter();
         scheduleCardList = new ListView(context);
         scheduleCardList.setId(generateViewId());
         scheduleCardList.setAdapter(scheduleCardAdapter);
@@ -67,14 +68,17 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
 
         LayoutParams params;
 
+        // 戻るボタン
         returnButton = new ImageButton(context);
         returnButton.setBackgroundColor(Color.BLUE);
+        returnButton.setImageResource(android.R.drawable.ic_menu_revert);
         returnButton.setId(generateViewId());
         params = new LayoutParams(100,100);
         params.setMargins(100, 0, 0, 100);
         params.addRule(ALIGN_PARENT_BOTTOM);
         addView(returnButton, params);
 
+        // 白背景
         RelativeLayout whiteLayout = new RelativeLayout(context);
         whiteLayout.setBackgroundColor(Color.WHITE);
         params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -82,6 +86,7 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
         params.addRule(ABOVE, returnButton.getId());
         addView(whiteLayout, params);
 
+        // スケジュール名入力テキスト
         params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100);
         params.setMargins(0,0,0,100);
         params.addRule(ALIGN_PARENT_BOTTOM);
@@ -91,6 +96,7 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
         scheduleName.setSingleLine();
         whiteLayout.addView(scheduleName, params);
 
+        // 保存ボタン
         params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100);
         params.addRule(ALIGN_PARENT_BOTTOM);
         params.addRule(RIGHT_OF, selectionCardList.getId());
@@ -98,16 +104,19 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
         saveButton.setImageResource(R.drawable.ic_done);
         whiteLayout.addView(saveButton, params);
 
+        // 選択可能カードリスト
         params = new LayoutParams(300, ViewGroup.LayoutParams.MATCH_PARENT);
         params.setMargins(0,0,0,0);
         params.addRule(ABOVE, scheduleName.getId());
         whiteLayout.addView(selectionCardList, params);
 
+        // スケジュールリスト
         params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(RIGHT_OF, selectionCardList.getId());
         params.addRule(ABOVE, scheduleName.getId());
         whiteLayout.addView(scheduleCardList, params);
 
+        // 選択可能カードリストのタッチイベント処理
         selectionCardList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -118,6 +127,7 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
             }
         });
 
+        // スケジュールリストのタッチイベント処理
         scheduleCardList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -126,44 +136,68 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
             }
         });
 
+        // 保存ボタンのタッチイベント処理
         saveButton.setOnTouchListener(this);
+
+        // 戻るボタンのタッチイベント処理
+        returnButton.setOnTouchListener(this);
+    }
+
+    private ScheduleCardAdapter getNewScheduleCardAdapter(){
+        List<String> list = new ArrayList<String>();
+        ScheduleCardAdapter adapter = new ScheduleCardAdapter(this.getContext(), list);
+        return adapter;
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        switch(motionEvent.getAction()) {
-            case MotionEvent.ACTION_UP:
 
-                List<String> cardNames = scheduleCardAdapter.getCardNames();
-                // カードが１枚も無い場合
-                if(cardNames.size() == 0){
-                    Toast.makeText(getContext(), "スケジュールがありません", Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                // スケジュール名が無い場合
-                if(scheduleName.getText() == null || scheduleName.getText().toString().length() == 0){
-                    Toast.makeText(getContext(), "スケージュール名がありません", Toast.LENGTH_LONG).show();
-                    return false;
-                }
+        // 保存ボタンを押した場合
+        if(view.getId() == saveButton.getId()){
+            switch(motionEvent.getAction()) {
+                case MotionEvent.ACTION_UP:
 
-                SQLiteDatabase db = helper.getWritableDatabase();
+                    List<String> cardNames = scheduleCardAdapter.getCardNames();
+                    // カードが１枚も無い場合
+                    if(cardNames.size() == 0){
+                        Toast.makeText(getContext(), "スケジュールがありません", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+                    // スケジュール名が無い場合
+                    if(scheduleName.getText() == null || scheduleName.getText().toString().length() == 0){
+                        Toast.makeText(getContext(), "スケージュール名がありません", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
 
-                Card[] cards = new Card[cardNames.size()];
-                for (int i = 0; i < cards.length; i++) {
-                    cards[i] = Card.selectCardByName(getContext(), db, cardNames.get(i));
-                }
+                    SQLiteDatabase db = helper.getWritableDatabase();
 
-                Schedule.newSchedule(getContext(), db, scheduleName.getText().toString(), cards);
+                    Card[] cards = new Card[cardNames.size()];
+                    for (int i = 0; i < cards.length; i++) {
+                        cards[i] = Card.selectCardByName(getContext(), db, cardNames.get(i));
+                    }
 
-                // ソフトウェアキーボードを消去
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(scheduleName.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                // Schedule登録画面を消す
-                setVisibility(INVISIBLE);
-                //
-                listAdapter.add(scheduleName.getText().toString());
+                    Schedule.newSchedule(getContext(), db, scheduleName.getText().toString(), cards);
 
+                    // ソフトウェアキーボードを消去
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(scheduleName.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    // Schedule登録画面を消す
+                    setVisibility(INVISIBLE);
+                    //
+                    listAdapter.add(scheduleName.getText().toString());
+
+            }
         }
+
+        // 戻るボタンを押した場合
+        if(view.getId() == returnButton.getId()){
+            if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                this.setVisibility(View.INVISIBLE);
+                scheduleCardAdapter = getNewScheduleCardAdapter();
+                scheduleCardList.setAdapter(scheduleCardAdapter);
+            }
+        }
+
         return false;
     }
 }

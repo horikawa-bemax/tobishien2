@@ -10,7 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
- * Created by bemax_ap01 on 2017/01/10.
+ * メインヴュー
  */
 
 public class MainView extends RelativeLayout {

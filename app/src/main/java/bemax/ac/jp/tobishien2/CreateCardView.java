@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by bemax_ap01 on 2017/01/13.
+ * Card新規作成ビュー
  */
 
 public class CreateCardView extends RelativeLayout {

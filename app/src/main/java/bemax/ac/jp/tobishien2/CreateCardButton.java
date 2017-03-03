@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 /**
- * Created by bemax_ap01 on 2017/01/11.
+ * カード新規作成ボタン
  */
 
 public class CreateCardButton extends ImageView implements View.OnTouchListener{

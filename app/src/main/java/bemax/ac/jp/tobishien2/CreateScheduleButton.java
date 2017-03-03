@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 /**
- * Created by bemax_ap01 on 2017/01/11.
+ * スケジュール新規作成ボタン
  */
 
 public class CreateScheduleButton extends ImageView implements View.OnTouchListener{
