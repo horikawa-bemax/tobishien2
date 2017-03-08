@@ -13,7 +13,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,7 +46,7 @@ public class CreateCardView extends RelativeLayout {
     private ImageButton doneButton, closeButton;
     private Bitmap addedCardImage, defaultImage;
 
-    public CreateCardView(Context context, SQLiteOpenHelper helper, DisplayMetrics metrics) {
+    public CreateCardView(Context context, SQLiteOpenHelper helper, DisplayMetrics metrics, final ArrayAdapter<String> adapter) {
         super(context);
         this.helper = helper;
 
@@ -68,16 +70,25 @@ public class CreateCardView extends RelativeLayout {
         doneButton.setBackgroundTintList(csl);
         //　消去ボタン
         closeButton = new ImageButton(getContext());
-        closeButton.setImageResource(R.drawable.ic_clear);
+        closeButton.setImageResource(android.R.drawable.ic_menu_revert);
         closeButton.setBackgroundColor(Color.BLUE);
         // 画面サイズから色々計算
         LayoutParams params;
         int displayH = metrics.heightPixels;
+        int displayW = metrics.widthPixels;
         final int CH = (int)(displayH * 0.4F);
         final int IH = (int)(CH * 0.8F);
         final int TH = (int)(CH * 0.2F);
         // 背景を塗りつぶす
-        setBackgroundColor(Color.WHITE);
+        setBackgroundColor(Color.argb(200,100,100,100));
+        // 背景用View
+        ImageView whiteView = new ImageView(context);
+        whiteView.setBackgroundColor(Color.WHITE);
+        whiteView.setId(generateViewId());
+        params = new LayoutParams(displayW-200, displayH-500);
+        params.addRule(CENTER_HORIZONTAL);
+        params.setMargins(100,100,100,0);
+        addView(whiteView, params);
         // 初期表示用の画像を作成
         defaultImage = Bitmap.createBitmap(IH, IH, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(defaultImage);
@@ -86,6 +97,7 @@ public class CreateCardView extends RelativeLayout {
         // 画像Viewのレイアウト設定
         params = new LayoutParams(IH, IH);
         params.addRule(CENTER_HORIZONTAL);
+        params.addRule(ALIGN_TOP, whiteView.getId());
         params.setMargins(20,20,20,20);
         addView(imageView, params);
         // 編集テキストのレイアウト設定
@@ -107,19 +119,20 @@ public class CreateCardView extends RelativeLayout {
         addView(doneButton, params);
         // 閉じるボタンのレイアウト設定
         params = new LayoutParams(TH, TH);
-        params.setMargins(10,10,10,10);
-        params.addRule(ALIGN_PARENT_RIGHT);
-        params.addRule(ALIGN_PARENT_TOP);
+        params.addRule(ALIGN_LEFT, whiteView.getId());
+        params.addRule(BELOW, whiteView.getId());
         addView(closeButton, params);
         // 確定ボタンがタッチされた時の処理
         doneButton.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (editText.getText() != null && editText.getText().length() != 0) {
+                    // DBへCardデータの書き込み
                     String s = storeImageFile();
                     if (s.length() == 0){
                         Toast.makeText(getContext(), "登録に失敗しました", Toast.LENGTH_LONG).show();
                     }else {
+                        adapter.add(editText.getText().toString());
                         Toast.makeText(getContext(), "「" + editText.getText() + "」を登録しました", Toast.LENGTH_SHORT).show();
                         editText.setText("");
                         imageView.setImageBitmap(defaultImage);
@@ -139,6 +152,9 @@ public class CreateCardView extends RelativeLayout {
                 imm.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 // Card登録画面を消す
                 setVisibility(INVISIBLE);
+                // スケジュール作成Viewの更新
+
+
                 return false;
             }
         });
@@ -219,4 +235,5 @@ public class CreateCardView extends RelativeLayout {
     private void insertCard(SQLiteDatabase db, String name, String fileName)throws SQLiteException{
         Card.newCard(getContext(), db, name, Card.FolderTypeStrage, fileName);
     }
+
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -36,25 +34,25 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
     private ListView scheduleCardList;
     private ScheduleCardAdapter scheduleCardAdapter;
     private SQLiteOpenHelper helper;
-    private ArrayAdapter<String> listAdapter;
+    private ArrayAdapter<String> scheduleListAdapter;
 
-    public CreateScheduleView(Context context, SQLiteOpenHelper helper, ArrayAdapter<String> adapter) {
+    public CreateScheduleView(Context context, SQLiteOpenHelper helper, ArrayAdapter<String> scheduleAdapter, ArrayAdapter<String> cardListAdapter) {
         super(context);
 
         this.helper = helper;
-        this.listAdapter = adapter;
+        this.scheduleListAdapter = scheduleAdapter;
 
         // 選択用カードリスト作成
-        SQLiteDatabase db = helper.getReadableDatabase();
-        ArrayAdapter<String> selectCardViewAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
-        Card[] cards = Card.selectAllCards(context, db);
-        if(cards != null)
-            for(Card card: cards){
-                selectCardViewAdapter.add(card.getName());
-            }
+        //SQLiteDatabase db = helper.getReadableDatabase();
+        //ArrayAdapter<String> selectCardViewAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1);
+        //Card[] cards = Card.selectAllCards(context, db);
+        //if(cards != null)
+            //for(Card card: cards){
+                //selectCardViewAdapter.add(card.getName());
+            //}
         selectionCardList = new ListView(context);
         selectionCardList.setId(generateViewId());
-        selectionCardList.setAdapter(selectCardViewAdapter);
+        selectionCardList.setAdapter(cardListAdapter);
 
         // スケジュール用アダプタ
         scheduleCardAdapter = getNewScheduleCardAdapter();
@@ -141,12 +139,17 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
 
         // 戻るボタンのタッチイベント処理
         returnButton.setOnTouchListener(this);
+        
     }
 
     private ScheduleCardAdapter getNewScheduleCardAdapter(){
         List<String> list = new ArrayList<String>();
         ScheduleCardAdapter adapter = new ScheduleCardAdapter(this.getContext(), list);
         return adapter;
+    }
+
+    public ScheduleCardAdapter getScheduleCardAdapter(){
+        return scheduleCardAdapter;
     }
 
     @Override
@@ -184,7 +187,7 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
                     // Schedule登録画面を消す
                     setVisibility(INVISIBLE);
                     //
-                    listAdapter.add(scheduleName.getText().toString());
+                    scheduleListAdapter.add(scheduleName.getText().toString());
 
             }
         }
@@ -200,4 +203,5 @@ public class CreateScheduleView extends RelativeLayout implements View.OnTouchLi
 
         return false;
     }
+
 }

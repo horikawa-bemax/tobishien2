@@ -78,25 +78,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //
         mainView.setSchedule(schedule);
 */
+        // スケジュール一覧のアダプターを取得
+        String[] scheduleTitles = Schedule.getScheduleTitles(this, database);
+        ArrayAdapter<String> scheduleAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        for(String title: scheduleTitles){
+            scheduleAdapter.add(title);
+        }
+        // カード一覧の
+        String[] cardTitles = Card.getCardTitles(this, database);
+        ArrayAdapter<String> cardListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        for(String title: cardTitles){
+            cardListAdapter.add(title);
+        }
         // スケジュールセレクト
-        scheduleSelectView = new ScheduleSelectView(this);
+        scheduleSelectView = new ScheduleSelectView(this, scheduleAdapter);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addContentView(scheduleSelectView, params);
         scheduleSelectView.setVisibility(View.INVISIBLE);
         scheduleSelectView.setOnItemClickListener(this);
 
         // カード新規作成
-        createCardView = new CreateCardView(this, sqLiteOpenHelper, metrics);
+        createCardView = new CreateCardView(this, sqLiteOpenHelper, metrics, cardListAdapter);
         LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params1.setMargins(100,100,100,100);
         addContentView(createCardView, params1);
         createCardView.setVisibility(View.INVISIBLE);
 
-        // スケジュール作成画面
-        // スケジュール選択画面のアダプターを取得
-        ArrayAdapter<String> adapter = scheduleSelectView.getListView().getAdapter();
         // スケジュール作成画面をインスタンス化
-        createScheduleView = new CreateScheduleView(this, sqLiteOpenHelper, adapter);
+        createScheduleView = new CreateScheduleView(this, sqLiteOpenHelper, scheduleAdapter, cardListAdapter);
         // レイアウト
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params2.setMargins(100,100,100,100);

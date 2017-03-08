@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import android.graphics.Color;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,11 +21,11 @@ import java.util.List;
  * Created by bemax_ap01 on 2017/01/11.
  */
 
-public class ScheduleSelectView extends RelativeLayout {
+public class ScheduleSelectView extends RelativeLayout implements View.OnTouchListener{
     private ScheduleListView listView;
     private ImageButton returnButton;
 
-    public ScheduleSelectView(Context context) {
+    public ScheduleSelectView(Context context, ArrayAdapter<String> adapter) {
         super(context);
 
         SQLiteOpenHelper helper = new MySQLiteOpenHelper(getContext());
@@ -40,14 +42,14 @@ public class ScheduleSelectView extends RelativeLayout {
         params.addRule(ALIGN_PARENT_BOTTOM);
         addView(returnButton,params);
 
-        listView = new ScheduleListView(getContext());
+        listView = new ScheduleListView(getContext(), adapter);
         listView.setBackgroundColor(Color.WHITE);
         params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.setMargins(100,100,100,0);
         params.addRule(ABOVE, returnButton.getId());
-        listView.setScheduleAdapter(db);
         addView(listView, params);
 
+        returnButton.setOnTouchListener(this);
     }
 
     private List<String> getScheduleTitles(){
@@ -62,5 +64,13 @@ public class ScheduleSelectView extends RelativeLayout {
 
     public ScheduleListView getListView(){
         return listView;
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if(view.getId()==returnButton.getId() && motionEvent.getAction()==MotionEvent.ACTION_UP){
+            this.setVisibility(INVISIBLE);
+        }
+        return false;
     }
 }

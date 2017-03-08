@@ -17,31 +17,10 @@ import java.util.List;
  */
 
 public class ScheduleListView extends ListView {
-    private ArrayAdapter<String> scheduleAdapter;
 
-    public ScheduleListView(Context context) {
+    public ScheduleListView(Context context, ArrayAdapter<String> adapter) {
         super(context);
-
-        MySQLiteOpenHelper openHelper = new MySQLiteOpenHelper(getContext());
-        SQLiteDatabase db = openHelper.getReadableDatabase();
-
-        setScheduleAdapter(db);
-
-        db.close();
+        setAdapter(adapter);
     }
 
-    public void setScheduleAdapter(SQLiteDatabase db){
-        final String[] scheduleTitles = Schedule.getScheduleTitles(getContext(), db);
-        scheduleAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
-
-        for(String title: scheduleTitles){
-            scheduleAdapter.add(title);
-        }
-
-        setAdapter(scheduleAdapter);
-    }
-
-    public ArrayAdapter<String> getAdapter(){
-        return scheduleAdapter;
-    }
 }
