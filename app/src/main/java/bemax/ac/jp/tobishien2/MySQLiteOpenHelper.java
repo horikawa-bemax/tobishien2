@@ -16,7 +16,7 @@ import java.io.File;
  */
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     static final String DB = "tobishien.db";
-    static final int DB_VERSION = 8;
+    static final int DB_VERSION = 9;
 
     public static final String CARD_TABLE = "cardTable";
     public static final String SCHEDULE_TABLE = "scheduleTable";

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mainView = new MainView(this, metrics);
         setContentView(mainView);
 
- /*       database.beginTransaction();
+        database.beginTransaction();
         try {
             Card c1 = Card.newCard(this, database, "聞く", Card.FolderTypeAsset, "kiku.gif");
             Card c2 = Card.newCard(this, database, "話す", Card.FolderTypeAsset, "hanasu.gif");
@@ -72,12 +73,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             database.endTransaction();
 
             schedule = Schedule.selectSchedule(this, database, "初めてのスケジュール");
-            database.close();
         }
 
         //
         mainView.setSchedule(schedule);
-*/
+
         // スケジュール一覧のアダプターを取得
         String[] scheduleTitles = Schedule.getScheduleTitles(this, database);
         ArrayAdapter<String> scheduleAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);

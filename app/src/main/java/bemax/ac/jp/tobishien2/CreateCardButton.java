@@ -2,6 +2,7 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -29,6 +30,7 @@ public class CreateCardButton extends ImageView implements View.OnTouchListener{
         paint.setTextSize(100);
         Canvas canvas = new Canvas(image);
         canvas.drawText("C", 30, 130, paint);
+
         setImageBitmap(image);
 
         setOnTouchListener(this);

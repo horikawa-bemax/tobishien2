@@ -34,7 +34,7 @@ public class SquareCardView extends AbstractCardView{
         params.setMargins(M, M, M, 0);
         addView(super.getImageView(), params);
 
-        super.getTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX, TH * 0.7F);
+        super.getTextView().setTextSize(TypedValue.COMPLEX_UNIT_PX, TH * 0.4F);
         super.getTextView().setText(card.getName());
         params = new LayoutParams(width, TH);
         params.setMargins(0, 0, 0, 0);
