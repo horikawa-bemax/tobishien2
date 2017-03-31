@@ -2,12 +2,9 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,10 +28,8 @@ public class CardTest {
         MySQLiteOpenHelper helper = new MySQLiteOpenHelper(appContext);
         database = helper.getWritableDatabase();
 
-        card1 = Card.newCard(appContext, database, "hogehoge", Card.FolderTypeAsset, "kiku.gif");
-
-        card2 = Card.newCard(appContext, database, "電話", Card.FolderTypeStrage, "Camera/IMG_20170107_172518.jpg");
-
+        Card card1 = Card.newCard(appContext, database, "hogehoge", Card.FolderTypeAsset, "kiku.gif");
+        Card card2 = Card.newCard(appContext, database, "電話", Card.FolderTypeAsset, "hanasu.gif");
     }
 
     @Test

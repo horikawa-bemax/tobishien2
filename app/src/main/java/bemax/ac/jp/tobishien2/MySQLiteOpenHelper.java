@@ -16,13 +16,13 @@ import java.io.File;
  */
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     static final String DB = "tobishien.db";
-    static final int DB_VERSION = 6;
+    static final int DB_VERSION = 9;
 
     public static final String CARD_TABLE = "cardTable";
     public static final String SCHEDULE_TABLE = "scheduleTable";
     public static final String INTO_CARD_TABLE = "intoCardTable";
 
-    static final String CREATE_CARD_TABLE = "create table cardTable( _id integer primary key autoincrement, name string not null unique, folderType integer not null, imageFile string not null unique);";
+    static final String CREATE_CARD_TABLE = "create table cardTable( _id integer primary key autoincrement, name string not null unique, folderType integer not null, imageFile string not null);";
     static final String CREATE_SCHEDULE_TABLE = "create table scheduleTable( _id integer primary key autoincrement, name string not null unique);";
     static final String CREATE_SCHEDULE_INTO_CARD_TABLE = "create table intoCardTable( schedule_id integer not null, card_id integer not null, rank integer not null);";
 

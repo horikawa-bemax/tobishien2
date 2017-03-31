@@ -2,11 +2,6 @@ package bemax.ac.jp.tobishien2;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -17,45 +12,63 @@ import android.widget.RelativeLayout;
 public class MenuView extends RelativeLayout {
 
     private ImageView styleChangeButton;
-    private ImageView editButton;
-    private ImageView loadButton;
+    private ImageView createCardButton;
+    private ImageView createScheduleButton;
+    private ImageView readButton;
 
-    public MenuView(Context context) {
+    public MenuView(Context context, int width) {
         super(context);
 
         setBackgroundColor(Color.RED);
 
-        loadButton = new ImageView(getContext());
-        loadButton.setId(getResources().getIdentifier("menu_loadButton", "id", "bemax.ac.jp"));
-        loadButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+        final int W = (int) (width * 0.8F);
+        final int M = (int) (width * 0.1F);
 
-                return false;
-            }
-        });
-        addView(loadButton);
+        LayoutParams params;
 
-        editButton = new ImageView(getContext());
-        editButton.setId(getResources().getIdentifier("menu_editButton", "id", "bemax.ac.jp"));
-        editButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+        readButton = new ReadButton(getContext());
+        readButton.setId(generateViewId());
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(CENTER_HORIZONTAL);
+        addView(readButton, params);
 
-                return false;
-            }
-        });
-        addView(editButton);
+        createCardButton = new CreateCardButton(getContext());
+        createCardButton.setId(generateViewId());
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(ALIGN_PARENT_BOTTOM);
+        params.addRule(CENTER_HORIZONTAL);
+        addView(createCardButton, params);
 
-        styleChangeButton = new ImageView(getContext());
-        styleChangeButton.setId(getResources().getIdentifier("menu_styleChangeButton", "id", "bemax.ac.jp"));
-        styleChangeButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+        createScheduleButton = new CreateScheduleButton(getContext());
+        createScheduleButton.setId(generateViewId());
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(ABOVE, createCardButton.getId());
+        params.addRule(CENTER_HORIZONTAL);
+        addView(createScheduleButton, params);
 
-                return false;
-            }
-        });
-        addView(styleChangeButton);
+        styleChangeButton = new StyleChangeButton(getContext());
+        styleChangeButton.setId(generateViewId());
+        params = new LayoutParams(W, W);
+        params.setMargins(M, M, M, M);
+        params.addRule(BELOW, readButton.getId());
+        params.addRule(CENTER_HORIZONTAL);
+        addView(styleChangeButton, params);
+    }
+
+    public ImageView getStyleChangeButton() {
+        return styleChangeButton;
+    }
+
+    public ImageView getCreateCardButton() {
+        return createCardButton;
+    }
+
+    public ImageView getCreateScheduleButton(){ return createScheduleButton; }
+
+    public ImageView getReadButton() {
+        return readButton;
     }
 }

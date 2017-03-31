@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class Schedule {
     private static final String INTO_CARD_TABLE = "intoCardTable";
 
     private Context context;
-    private ArrayList<Card> list;   // カードのリスト
+    private ArrayList<Card> cardList;   // カードのリスト
     private String name;            // スケジュールの名前
     private long id;
 
@@ -60,12 +62,8 @@ public class Schedule {
         return this.name;
     }
 
-    public ArrayList<Card> getScheduleList() {
-        return list;
-    }
-
-    public void setScheduleList(ArrayList<Card> list) {
-        this.list = list;
+    public ArrayList<Card> getScheduleCardList() {
+        return cardList;
     }
 
     private Schedule(Context context) {
@@ -73,49 +71,7 @@ public class Schedule {
     }
 
     public void addScheduleCard(Card card){
-        list.add(card);
-    };
 
-    public void setTouchListenerToChards(View.OnTouchListener listener){
-        for(Card card: list){
-            card.getView().setOnTouchListener(listener);
-        }
-    }
-
-    /**
-     * スケジュールのカードリストに従って、スケジュール用のViewGroupを作成する
-     * @param root
-     * @param schedule
-     * @param style
-     * @return スケジュールカードViewの入ったLinearLayoutを
-     */
-    public static LinearLayout createScheduleLayout(ViewGroup root, Schedule schedule, Card.Style style){
-        // LinearLayoutを新規作成（スケジュールのベースとなるViewGroup）
-        LinearLayout layout = new LinearLayout(root.getContext());  // このレイアウト
-
-        // レイアウトの設定
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        layout.setLayoutParams(params);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        // レイアウトにCardのViewを追加する
-        for(Card card: schedule.list){
-            try {
-                View cardView = Card.createCardView(layout, card, style);
-                layout.addView(cardView);
-                cardView.setOnTouchListener((View.OnTouchListener) root.getContext());
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-
-        // 親ViewにこのViewGroupを追加する
-        root.addView(layout);   // 親Viewにこのレイアウトを追加する
-
-        // インスタンス変数に参照をセット
-        //schedule.layout = layout;
-
-        return layout;
     }
 
     public static Schedule newSchedule(Context context, SQLiteDatabase db, String title, Card[] cards){
@@ -149,21 +105,49 @@ public class Schedule {
             schedule = new Schedule(context);
             schedule.id = sc.getLong(sc.getColumnIndex("_id"));
             schedule.name = sc.getString(sc.getColumnIndex("name"));
-            schedule.list = new ArrayList<Card>();
+            schedule.cardList = new ArrayList<Card>();
 
             Cursor ictc = db.query(INTO_CARD_TABLE, null, "schedule_id=?", new String[]{"" + schedule.id}, null, null, null, null);
             while (ictc.moveToNext()) {
                 long cardId = ictc.getLong(ictc.getColumnIndex("card_id"));
                 Card card = Card.selectCard(context, db, cardId);
-                schedule.list.add(card);
+                schedule.cardList.add(card);
             }
         }
 
         return schedule;
     }
 
-    public static boolean deleteSchedule(Context context, SQLiteDatabase db, long id){
+    public static boolean deleteSchedulebyTitle(Context context, SQLiteDatabase db, String title){
+        boolean result = false;
+        db.beginTransaction();
+        try {
+            String sql = "delete from intoCardTable where schedule_id in (select _id from scheduleTable where name = '" + title + "')";
+            db.execSQL(sql);
+            sql = "delete from scheduleTable where name = '" + title + "'";
+            db.execSQL(sql);
+            Toast.makeText(context, "削除しました", Toast.LENGTH_LONG).show();
+            result = true;
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            db.endTransaction();
+        }
+        return result;
+    }
 
-        return false;
+    public static String[] getScheduleTitles(Context context, SQLiteDatabase db){
+        ArrayList<String> list = new ArrayList<String>();
+        Cursor cursor = db.rawQuery("select name from scheduleTable", null);
+        while (cursor.moveToNext()){
+            list.add(cursor.getString(cursor.getColumnIndex("name")));
+        }
+        cursor.close();
+
+        final String[] s = new String[list.size()];
+        list.toArray(s);
+
+        return s;
     }
 }
