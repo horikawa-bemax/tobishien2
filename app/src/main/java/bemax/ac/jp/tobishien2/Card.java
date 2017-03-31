@@ -159,9 +159,12 @@ public class Card {
 
     public static String[] getCardTitles(Context context, SQLiteDatabase db){
         Card[] cards = selectAllCards(context, db);
-        String[] titles = new String[cards.length];
-        for(int i=0; i<titles.length; i++){
-            titles[i] = cards[i].getName();
+        String[] titles = new String[]{};
+        if(cards != null) {
+            titles = new String[cards.length];
+            for (int i = 0; i < titles.length; i++) {
+                titles[i] = cards[i].getName();
+            }
         }
         return titles;
     }

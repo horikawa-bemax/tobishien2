@@ -62,6 +62,10 @@ public class ScheduleSelectView extends RelativeLayout implements View.OnTouchLi
         listView.setOnItemClickListener(l);
     }
 
+    public void setOnItemLongClickListener(AdapterView.OnItemLongClickListener l){
+        listView.setOnItemLongClickListener(l);
+    }
+
     public ScheduleListView getListView(){
         return listView;
     }

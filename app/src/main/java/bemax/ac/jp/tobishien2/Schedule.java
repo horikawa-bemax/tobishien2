@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,9 +118,23 @@ public class Schedule {
         return schedule;
     }
 
-    public static boolean deleteSchedule(Context context, SQLiteDatabase db, long id){
-
-        return false;
+    public static boolean deleteSchedulebyTitle(Context context, SQLiteDatabase db, String title){
+        boolean result = false;
+        db.beginTransaction();
+        try {
+            String sql = "delete from intoCardTable where schedule_id in (select _id from scheduleTable where name = '" + title + "')";
+            db.execSQL(sql);
+            sql = "delete from scheduleTable where name = '" + title + "'";
+            db.execSQL(sql);
+            Toast.makeText(context, "削除しました", Toast.LENGTH_LONG).show();
+            result = true;
+            db.setTransactionSuccessful();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            db.endTransaction();
+        }
+        return result;
     }
 
     public static String[] getScheduleTitles(Context context, SQLiteDatabase db){
